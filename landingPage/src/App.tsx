@@ -14,6 +14,10 @@ function App() {
       <input type="text" id="inputField" name="inputField" placeholder="password"></input>
       </div>
       <div className="card">
+        <input type="text" id="Username" name="Username" placeholder="Username"></input>
+        <br></br>
+        <input type="password" id="password" name="password" placeholder="Password"></input>
+        <br></br>
         <button>log in</button>
         <button >register</button>
       </div>
