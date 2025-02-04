@@ -1,44 +1,23 @@
-import './App.css';
-import { useState } from 'react';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import LandingPage from "./pages/landingPage";
+import RegisterationPage from "./pages/registerationPage";
 
 
-const TextInput = () => {
- 
-    const [text, setText] = useState<string>('')
 
-  return (
-    <>
-      <h1>Summer Training Platform</h1>
-      <br />
-      <br />
-      <div className="card">
-        <input type="text" value={text} onChange={(e:React.ChangeEvent<HTMLInputElement>) =>
-          setText(e.target.value)
-        } 
-        placeholder="           USERNAME"
-        className="w-full p-2 rounded-full border border-gray bg-white text-black  focus:outline-none focus:ring-1 focus:ring-white-500" 
-        />
-        <br />
-        <br />
-      <input type="text" value={text} onChange={(e:React.ChangeEvent<HTMLInputElement>) =>
-          setText(e.target.value)
-        } 
-        placeholder="           PASSWORD"
-        className="w-full p-2 rounded-full border border-gray bg-white text-black  focus:outline-none focus:ring-1 focus:ring-white-500" 
-        />
-        
-        <br />
-        <br />
-        <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
-          log in
-        </button>
-        <button className="px-4 py-2 bg-blue-50 text-white rounded-md hover:bg-blue-600 transition">
-          register
-        </button>
-        </div>
-    </>
-  )
+export default function App() {
+return (
+  <>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<LandingPage />}/>
+        <Route path="/registerationPage" element={<RegisterationPage />} />
+        <Route path="*" element={<h1>404</h1>} />
+      </Routes>
+    </BrowserRouter>
+  
+  
+  </>
+)
+
+
 }
-
-export default TextInput;
-
