@@ -1,4 +1,5 @@
-import UserTextfield from "../components/userTextfield";
+import InputTextfield from "../components/inputTextfield";
+import RadioButton from "../components/radioButton";
 
 
 const RegisterationPage = () => {
@@ -6,16 +7,17 @@ const RegisterationPage = () => {
         <div>
             <h1>Registeration page</h1>
             <br />
+            <RadioButton nameHolder="Student" valueHolder="Student" />
             <br />
-            <UserTextfield/>
+            <InputTextfield nameHolder="Student ID"/>
             <br />
-            <UserTextfield/>
+            <InputTextfield nameHolder="Student Name"/>
             <br />
-            <UserTextfield/>
+            <InputTextfield nameHolder="Email"/>
             <br />
-            <UserTextfield/>
+            <InputTextfield nameHolder="Major"/>
             <br />
-            <UserTextfield/>
+            <InputTextfield nameHolder="Studied hours"/>
         </div>
     )
 }

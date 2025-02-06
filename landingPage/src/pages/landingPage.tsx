@@ -38,12 +38,12 @@ const TextInput = () => {
         <br />
         <br />
         <button 
-        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+        className="px-4 py-2 bg-white mr-2  text-black rounded-md hover:bg-blue-600 transition">
           log in
         </button>
         <button 
         onClick={handleregisterclick}
-        className="px-4 py-2 bg-blue-50 text-white rounded-md hover:bg-blue-600 transition">
+        className=" px-4 py-2 mr-2 bg-white text-black rounded-md hover:bg-gray-600 transition">
           register
         </button>
         </div>
