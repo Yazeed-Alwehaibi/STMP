@@ -11,7 +11,7 @@ const TextInput = () => {
     const navigate = useNavigate();
     const handleregisterclick = () => {
         
-        navigate('/registerationPage')
+        navigate('/registarationPage')
         
     }
 

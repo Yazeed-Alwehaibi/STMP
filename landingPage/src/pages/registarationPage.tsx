@@ -1,11 +1,13 @@
 import InputTextfield from "../components/inputTextfield";
 import RadioButton from "../components/radioButton";
+import Submitbutton from "../components/submitbutton";
 
 
-const RegisterationPage = () => {
+
+const RegistarationPage = () => {
     return (
         <div>
-            <h1>Registeration page</h1>
+            <h1>Registration page</h1>
             <br />
             <RadioButton nameHolder="Student" valueHolder="Student" />
             <br />
@@ -18,8 +20,10 @@ const RegisterationPage = () => {
             <InputTextfield nameHolder="Major"/>
             <br />
             <InputTextfield nameHolder="Studied hours"/>
+            <br />
+            <Submitbutton buttonName="submit"/>
         </div>
     )
 }
 
-export default RegisterationPage;
+export default RegistarationPage;

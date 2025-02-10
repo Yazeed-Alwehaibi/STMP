@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LandingPage from "./pages/landingPage";
-import RegisterationPage from "./pages/registerationPage";
+import RegistarationPage from "./pages/registarationPage";
 
 
 
@@ -10,7 +10,7 @@ return (
     <BrowserRouter>
       <Routes>
         <Route index element={<LandingPage />}/>
-        <Route path="/registerationPage" element={<RegisterationPage />} />
+        <Route path="/registarationPage" element={<RegistarationPage />} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </BrowserRouter>
