@@ -1,0 +1,75 @@
+CREATE TABLE UniqueIDs (
+    id BIGINT PRIMARY KEY CHECK (LENGTH(id::TEXT) = 9)
+);
+
+CREATE TABLE Student (
+    studentID BIGINT PRIMARY KEY CHECK (LENGTH(studentID::TEXT) = 9),
+    studentName VARCHAR(255) NOT NULL,
+    Email VARCHAR(255) UNIQUE NOT NULL CHECK (Email LIKE '%@university.edu'),
+    major VARCHAR(100) NOT NULL,
+    studiedHours INT CHECK (studiedHours >= 0),
+    GPA DECIMAL(3,2) CHECK (GPA BETWEEN 0.00 AND 4.00),
+    status VARCHAR(50) CHECK (status IN ('training', 'not training')),
+    password VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_studentID FOREIGN KEY (studentID) REFERENCES UniqueIDs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Supervisor (
+    SupervisorID BIGINT PRIMARY KEY CHECK (LENGTH(SupervisorID::TEXT) = 9),
+    supervisorName VARCHAR(255) NOT NULL,
+    Email VARCHAR(255) UNIQUE NOT NULL CHECK (Email LIKE '%@university.edu'),
+    Department VARCHAR(100) NOT NULL,
+    status VARCHAR(50) CHECK (status IN ('active', 'inactive')),
+    password VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_supervisorID FOREIGN KEY (SupervisorID) REFERENCES UniqueIDs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE TrainingRepresentative (
+    repID BIGINT PRIMARY KEY CHECK (repID BETWEEN 900000000 AND 999999999),
+    repName VARCHAR(255) NOT NULL,
+    Email VARCHAR(255) UNIQUE NOT NULL,
+    venueID INT NOT NULL,
+    status VARCHAR(50) CHECK (status IN ('active', 'inactive')),
+    password VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_repID FOREIGN KEY (repID) REFERENCES UniqueIDs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Reports (
+    reportID BIGINT PRIMARY KEY CHECK (LENGTH(reportID::TEXT) = 10),
+    studentID BIGINT NOT NULL,
+    supervisorID BIGINT NOT NULL,
+    applicationID INT NOT NULL,
+    submissionDate TIMESTAMP NOT NULL,
+    mark DECIMAL(4,2),
+    feedback TEXT,
+    type ENUM('1', '2', '3', 'final') NOT NULL,
+    status VARCHAR(250),
+    FOREIGN KEY (studentID) REFERENCES Student(studentID),
+    FOREIGN KEY (supervisorID) REFERENCES Supervisor(SupervisorID)
+);
+
+CREATE TABLE Presentations (
+    presentationID BIGINT PRIMARY KEY CHECK (LENGTH(presentationID::TEXT) = 7),
+    studentID BIGINT NOT NULL,
+    SupervisorID BIGINT NOT NULL,
+    applicationID INT NOT NULL,
+    Date TIMESTAMP NOT NULL,
+    File TEXT,
+    mark DECIMAL(4,2),
+    status VARCHAR(50),
+    FOREIGN KEY (studentID) REFERENCES Student(studentID),
+    FOREIGN KEY (SupervisorID) REFERENCES Supervisor(SupervisorID)
+);
+
+CREATE TABLE Offers (
+    offerID BIGINT PRIMARY KEY CHECK (LENGTH(offerID::TEXT) = 8),
+    venueID INT NOT NULL,
+    repID BIGINT NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    startDate TIMESTAMP NOT NULL,
+    endDate TIMESTAMP NOT NULL,
+    maxParticipant INT CHECK (maxParticipant > 0),
+    status VARCHAR(50) CHECK (status IN ('full', 'canceled')),
+    FOREIGN KEY (repID) REFERENCES TrainingRepresentative(repID)
+);

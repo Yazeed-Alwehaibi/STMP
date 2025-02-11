@@ -18,6 +18,8 @@ const StudentRegistarationPage = () => {
             <br />
             <InputTextfield nameHolder="Studied hours"/>
             <br />
+            <InputTextfield nameHolder="GPA"/>
+            <br />
             <Submitbutton buttonName="submit"/>
         </div>
     )
