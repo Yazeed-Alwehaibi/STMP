@@ -21,13 +21,10 @@ const TextInput = () => {
       <h1>Summer Training Platform</h1>
       <br/>
       <div>
-        <InputTextfield nameHolder='USER ID' 
-        
-        />
+        <InputTextfield nameHolder='USER ID'/>
         <br />
         <PasswordTextfield
-        nameHolder='PASSWORD'
-        />
+        nameHolder='PASSWORD'/>
         <br />
         <div className="flex justify-center space-x-4">
                 <Button buttonName="Log in"  />
