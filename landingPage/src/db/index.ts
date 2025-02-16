@@ -15,7 +15,7 @@ const pool = new Pool({
 });
 
 // Initialize DrizzleORM
-import * as schema from "./db/schema"; // Adjust the path to your schema file
+import * as schema from "./schema"; // Adjust the path to your schema file
 
 const db = drizzle(pool, { schema });
 
