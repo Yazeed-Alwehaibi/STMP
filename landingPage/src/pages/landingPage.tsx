@@ -1,20 +1,15 @@
 import '../App.css';
-import { useNavigate } from 'react-router-dom';
 import Button from '../components/button';
 import InputTextfield from '../components/inputTextfield';
 import PasswordTextfield from '../components/passwordTextfield';
+import RoutingMethods from './routing/RoutingMehods';
 
 
 
 
 const TextInput = () => {
- 
-    const navigate = useNavigate();
-    const handleregisterclick = () => {
-        
-        navigate('/registarationPage')
-        
-    }
+
+  const {regPage} = RoutingMethods()
 
   return (
     <>
@@ -28,7 +23,7 @@ const TextInput = () => {
         <br />
         <div className="flex justify-center space-x-4">
                 <Button buttonName="Log in"  />
-                <Button buttonName="Register" onClick={handleregisterclick} />
+                <Button buttonName="Register" onClick={regPage} />
             </div>
 
         </div>
