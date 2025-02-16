@@ -1,10 +1,11 @@
-import Button from '../components/button';
-import RoutingMethods from './routing/RoutingMehods';
+import Button from '../components/buttons/button';
+import RoutingMethods from './routing/RoutingMethods';
 
 
 
-const RegistarationPage = () => {
-    const { studentRegPage, supervisorRegPage, repRegPage } = RoutingMethods();
+const RegistrationPage = () => {
+    const { studentRegPage, supervisorRegPage, repRegPage, 
+        studentHome, supervisorHome, repHome } = RoutingMethods();
 
     return (
         <div>
@@ -15,8 +16,16 @@ const RegistarationPage = () => {
                 <Button buttonName="Supervisor" onClick={supervisorRegPage} />
                 <Button buttonName="Training Representative" onClick={repRegPage} />
             </div>
+            <br />
+            <h2>temporary buttons</h2>
+            <br />
+            <div className='flex justify-center space-x-4'> 
+                <Button buttonName="stu Home Page" onClick={studentHome} />
+                <Button buttonName="super HomePage" onClick={supervisorHome} />
+                <Button buttonName="rep HomePage" onClick={repHome} />
+            </div>
         </div>
     )
 }
 
-export default RegistarationPage;
+export default RegistrationPage;

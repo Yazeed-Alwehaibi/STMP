@@ -1,8 +1,8 @@
 import '../App.css';
-import Button from '../components/button';
-import InputTextfield from '../components/inputTextfield';
-import PasswordTextfield from '../components/passwordTextfield';
-import RoutingMethods from './routing/RoutingMehods';
+import Button from '../components/buttons/button';
+import InputTextfield from '../components/inputFields/inputTextfield';
+import PasswordTextfield from '../components/inputFields/passwordTextfield';
+import RoutingMethods from './routing/RoutingMethods';
 
 
 
