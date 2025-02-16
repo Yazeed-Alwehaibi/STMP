@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LandingPage from "./pages/landingPage";
-import RegistarationPage from "./pages/RegistrationPage";
-import StudentRegistarationPage from "./pages/student/studentRegestarationPage";
+import RegistrationPage from "./pages/RegistrationPage";
+import StudentRegistrationPage from "./pages/student/studentRegistrationPage";
 import SupervisorRegistrationPage from "./pages/supervisor/supervisorRegistrationPage";
-import RepRegistarationPage from "./pages/trainingRep/repRegistrationPage";
+import RepRegistrationPage from "./pages/trainingRep/repRegistrationPage";
 
 
 
@@ -14,10 +14,10 @@ return (
       <Routes>
         <Route index element={<LandingPage />}/>
         <Route path="/landingPage" element={<LandingPage />} />
-        <Route path="/registarationPage" element={<RegistarationPage />} />
-        <Route path="/studentRegistarationPage" element={<StudentRegistarationPage />} />
+        <Route path="/registrationPage" element={<RegistrationPage />} />
+        <Route path="/studentRegistrationPage" element={<StudentRegistrationPage />} />
         <Route path="/supervisorRegistrationPage" element={<SupervisorRegistrationPage />} />
-        <Route path="/repRegistarationPage" element={<RepRegistarationPage />} />
+        <Route path="/repRegistrationPage" element={<RepRegistrationPage />} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </BrowserRouter>

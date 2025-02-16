@@ -3,7 +3,7 @@ import Submitbutton from "../../components/submitbutton";
 
 
 
-const StudentRegistarationPage = () => {
+const StudentRegistrationPage = () => {
     return (
         <div>
             <h1>Registration page</h1>
@@ -25,4 +25,4 @@ const StudentRegistarationPage = () => {
     )
 }
 
-export default StudentRegistarationPage;
+export default StudentRegistrationPage;
