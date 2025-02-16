@@ -33,7 +33,6 @@ const RegistarationPage = () => {
                 <Button buttonName="Supervisor" onClick={handleSupervisortclick} />
                 <Button buttonName="Training Representative" onClick={handleRepClick} />
             </div>
-
         </div>
     )
 }

@@ -1,5 +1,5 @@
-import InputTextfield from "../components/inputTextfield";
-import Submitbutton from "../components/submitbutton";
+import InputTextfield from "../../components/inputTextfield";
+import Submitbutton from "../../components/submitbutton";
 
 
 
