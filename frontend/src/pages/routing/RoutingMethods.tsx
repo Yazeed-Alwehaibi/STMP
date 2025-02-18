@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import {studentRegForm, supervisorRegForm, 
-    repRegForm, registrationPage,studentHomePage,repHomePage ,supervisorHomePage} from './routes';
+    repRegForm, registrationPage,studentHomePage,
+    repHomePage ,supervisorHomePage} from './routes';
 
 const RoutingMethods = () => {
     const navigate = useNavigate();
@@ -37,7 +38,9 @@ const RoutingMethods = () => {
         navigate(studentHomePage);
     }
 
-    return { studentRegPage, supervisorRegPage, repRegPage, regPage, supervisorHome, repHome, studentHome };
+    return { studentRegPage, supervisorRegPage,
+         repRegPage, regPage, supervisorHome,
+          repHome, studentHome };
 }
 
 export default RoutingMethods;
