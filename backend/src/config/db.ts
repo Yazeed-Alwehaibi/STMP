@@ -1,5 +1,7 @@
 import { Pool } from 'pg';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
+
+
 
 dotenv.config();
 
@@ -8,7 +10,7 @@ const pool = new Pool({
     host: process.env.HOST,
     database: process.env.DATABASE,
     password: process.env.PASSWORD,
-    port: process.env.PORT ? parseInt(process.env.PORT, 10) : undefined,
+    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 5432,
   });
 
 pool.connect()

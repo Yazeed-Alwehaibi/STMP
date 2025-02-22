@@ -5,7 +5,7 @@ import exampleRouter from './routes/exampleRoute';
 
 dotenv.config();
 const app: Application = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5432;
 
 app.use(express.json());
 app.use(cors());
