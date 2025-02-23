@@ -1,12 +1,11 @@
-// drizzle.config.ts
+import 'dotenv/config';  // Load environment variables from .env
 import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
-  schema: './src/models',  // Path to your database models
-  out: './migrations',     // Path where migrations will be saved
-  driver: 'pg',            // Database driver: 'pg' for PostgreSQL
+  out: './drizzle',  // Generated migration files
+  schema: './src/db/schema.ts',  // Path to your database schema
+  dialect: 'postgresql',  // Database dialect
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL!, // Database connection string
-    // You could add connection options here like ssl, timeout, etc.
+    url: process.env.DATABASE_URL!,  // Ensure the DATABASE_URL is loaded from .env
   },
 });
