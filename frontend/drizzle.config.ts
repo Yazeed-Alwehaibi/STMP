@@ -1,11 +1,13 @@
-import 'dotenv/config';  // Load environment variables from .env
+import { config } from 'dotenv';
 import { defineConfig } from 'drizzle-kit';
 
+config({ path: '.env' });
+
 export default defineConfig({
-  out: './drizzle',  // Generated migration files
-  schema: './src/db/schema.ts',  // Path to your database schema
-  dialect: 'postgresql',  // Database dialect
+  schema: './src/db/schema.ts',
+  out: './supabase/migrations',
+  dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL!,  // Ensure the DATABASE_URL is loaded from .env
+    url: process.env.DATABASE_URL!,
   },
 });
