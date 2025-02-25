@@ -41,7 +41,7 @@ return (
         <Route path="/supervisorPresentationPage" element={<SupervisorPresentationPage />} />
         <Route path="/repApplicationPage" element={<RepApplicationPage />} />
         <Route path="/repReportPage" element={<RepReportPage />} />
-        <Route path="/repOffersPage " element={<RepOffersPage />} />
+        <Route path="/repOffersPage" element={<RepOffersPage />} />
  
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
