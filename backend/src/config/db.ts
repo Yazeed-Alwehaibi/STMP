@@ -6,11 +6,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const pool = new Pool({
-    user: process.env.USER,
-    host: process.env.HOST,
-    database: process.env.DATABASE,
-    password: process.env.PASSWORD,
-    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 5432,
+     connectionString : process.env.DATABASE_URL,
   });
 
 pool.connect()
