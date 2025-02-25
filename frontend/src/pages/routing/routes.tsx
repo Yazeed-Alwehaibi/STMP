@@ -11,10 +11,22 @@ const registrationPage = "/registrationPage";
 const studentHomePage = "/studentHomePage";
 const supervisorHomePage = "/supervisorHomePage";
 const repHomePage = "/repHomePage";
+const studentApplicationPage = "/studentApplicationPage";
+const studentReportPage = "/studentReportPage";
+const studentPresentationPage = "/studentPresentationPage";
+const supervisorApplicationPage = "/supervisorApplicationPage";
+const supervisorReportPage = "/supervisorReportPage"; 
+const supervisorPresentationPage = "/supervisorPresentationPage";
+const repApplicationPage = "/repApplicationPage";
+const repReportPage = "/repReportPage";
+const repOffersPage = "/repOffersPage";
 
 
 
 
 export { studentRegForm, supervisorRegForm, repRegForm,
      landingPage, registrationPage, studentHomePage,
-      supervisorHomePage, repHomePage };
+      supervisorHomePage, repHomePage, studentApplicationPage,
+      studentReportPage, studentPresentationPage, repOffersPage,
+      repReportPage, repApplicationPage, supervisorApplicationPage,
+      supervisorReportPage, supervisorPresentationPage};
