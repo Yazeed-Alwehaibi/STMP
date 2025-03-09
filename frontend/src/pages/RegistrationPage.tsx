@@ -1,31 +1,110 @@
-import Button from '../components/buttons/button';
-import RoutingMethods from './routing/RoutingMethods';
+import { useForm, Controller } from "react-hook-form";
+import { Input } from "../components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
 
+const roles = ["student", "supervisor", "training rep"];
 
+type FormData = {
+  role: string;
+  userID: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  department?: string;
+  studiedHours?: number;
+  GPA?: number;
+};
 
-const RegistrationPage = () => {
-    const { studentRegPage, supervisorRegPage, repRegPage, 
-        studentHome, supervisorHome, repHome } = RoutingMethods();
+import { Control, UseFormRegister, FieldErrors } from "react-hook-form";
 
-    return (
-        <div>
-            <h1>Registration Page</h1>
-            <br />
-            <div className="flex justify-center space-x-4">
-                <Button buttonName="Student" onClick={studentRegPage} />
-                <Button buttonName="Supervisor" onClick={supervisorRegPage} />
-                <Button buttonName="Training Representative" onClick={repRegPage} />
+function RoleSelector({ control }: { control: Control<FormData> }) {
+  return (
+    <Controller
+      name="role"
+      control={control}
+      defaultValue={roles[1]}
+      render={({ field }) => (
+        <RadioGroup onValueChange={field.onChange} value={field.value}>
+          {roles.map((r) => (
+            <div key={r} className="flex items-center gap-2">
+              <RadioGroupItem value={r} id={r} />
+              <label htmlFor={r} className="capitalize">{r}</label>
             </div>
-            <br />
-            <h2>temporary buttons</h2>
-            <br />
-            <div className='flex justify-center space-x-4'> 
-                <Button buttonName="stu Home Page" onClick={studentHome} />
-                <Button buttonName="super HomePage" onClick={supervisorHome} />
-                <Button buttonName="rep HomePage" onClick={repHome} />
-            </div>
-        </div>
-    )
+          ))}
+        </RadioGroup>
+      )}
+    />
+  );
 }
 
-export default RegistrationPage;
+function UserInfoFields({ register, errors }: { register: UseFormRegister<FormData>; errors: FieldErrors<FormData> }) {
+  return (
+    <>
+      <Input 
+        {...register("userID", { 
+          required: "User ID is required", 
+          pattern: { 
+            value: /^[0-9]+$/, 
+            message: "User ID must contain only numbers" 
+          }, 
+          maxLength: { value: 8, message: "User ID cannot exceed 8 digits" } 
+        })} 
+        placeholder="User ID" 
+        type="text" 
+        required 
+      />
+      {errors.userID && <p className="text-red-500 text-sm">{errors.userID.message}</p>}
+      
+      <Input {...register("firstName", { required: true, pattern: { value: /^[A-Za-z]+$/, message: "First Name must contain only letters" }, maxLength: 80 })} placeholder="First Name" required />
+      {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName.message}</p>}
+      
+      <Input {...register("lastName", { required: true, pattern: { value: /^[A-Za-z]+$/, message: "Last Name must contain only letters" }, maxLength: 100 })} placeholder="Last Name" required />
+      {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName.message}</p>}
+      
+      <Input {...register("email", { required: true, pattern: { value: /^\S+@\S+$/i, message: "Invalid email format" } })} type="email" placeholder="Email" required />
+      {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+    </>
+  );
+}
+
+function ConditionalFields({ register, errors, role }: { register: UseFormRegister<FormData>; errors: FieldErrors<FormData>; role: string }) {
+  return (
+    <>
+      {(role === "student" || role === "supervisor") && (
+        <>
+          <Input {...register("department", { maxLength: 30 })} placeholder="Department" required />
+          {errors.department && <p className="text-red-500 text-sm">{errors.department.message}</p>}
+        </>
+      )}
+      {role === "student" && (
+        <>
+          <Input {...register("studiedHours", { required: true, min: 120, maxLength: 3 })} type="number" placeholder="Studied Hours" required />
+          {errors.studiedHours && <p className="text-red-500 text-sm">{errors.studiedHours.message}</p>}
+          
+          <Input {...register("GPA", { required: true, min: 0, max: 5 })} type="number" step="0.01" placeholder="GPA" required />
+          {errors.GPA && <p className="text-red-500 text-sm">{errors.GPA.message}</p>}
+        </>
+      )}
+    </>
+  );
+}
+
+export default function RoleBasedForm() {
+  const { register, handleSubmit, watch, control, formState: { errors } } = useForm<FormData>();
+  const role = watch("role");
+
+  const onSubmit = (data: FormData) => {
+    console.log("Form Data Submitted:", data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg mx-auto p-4 space-y-4 border rounded-lg shadow bg-white">
+      <h2 className="text-xl font-semibold">User Registration</h2>
+      <RoleSelector control={control} />
+      <UserInfoFields register={register} errors={errors} />
+      <ConditionalFields register={register} errors={errors} role={role} />
+      <Button type="submit" className="w-full">Submit</Button>
+    </form>
+  );
+}
