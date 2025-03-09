@@ -1,26 +1,40 @@
 import { Request, Response } from "express";
-import {db} from "../db/index";
+import { db } from "../db/index";
 import { usersTable } from "../db/schema";
 
-// interface UserRequestBody {
-//   name: string;
-//   age: number;
-//   email: string;
-// }
-
 export const addUser = async (req: Request, res: Response): Promise<void> => {
-  const { name, age, email } = req.params; // Access data from the body
+  const { 
+    userid, 
+    name, 
+    email, 
+    role, 
+    department, 
+    extrainfo, 
+    password, 
+    status 
+  } = req.params; // Access data from URL parameters
 
-  if (!name || !age || !email) {
-    res.status(400).json({ error: "Name, age, and email are required" });
+  if (!userid || !name || !email || !role || !password || !status) {
+    res.status(400).json({ error: "All fields are required" });
     return;
   }
 
   try {
+    const validRoles = ["Supervisor", "Student", "Training Representative"];
+    if (!validRoles.includes(role)) {
+      res.status(400).json({ error: "Invalid role" });
+      return;
+    }
+
     const insertedUser = await db.insert(usersTable).values({ 
-      name, 
-      age: Number(age), // Ensure age is a number
-      email 
+      UserID: parseInt(userid), // Ensure UserID is a number
+      UserName: name, 
+      Email: email,
+      Role: role as "Supervisor" | "Student" | "Training Representative",
+      DepartmentOrMajor: department,  // Adding the new column for DepartmentOrMajor
+      ExtraInfo: extrainfo,                  // Adding the new column for ExtraInfo
+      Password: password,
+      Status: status,
     }).returning();
 
     res.status(201).json({

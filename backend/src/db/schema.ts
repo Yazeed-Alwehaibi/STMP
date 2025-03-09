@@ -1,27 +1,20 @@
-import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, integer, pgEnum } from 'drizzle-orm/pg-core';
 
-export const usersTable = pgTable('users_table', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-  age: integer('age').notNull(),
-  email: text('email').notNull().unique(),
-});
+ 
+  export const roleEnum = pgEnum('Role', ['Supervisor', 'Student', 'Training Representative']);
 
-export const postsTable = pgTable('posts_table', {
-  id: serial('id').primaryKey(),
-  title: text('title').notNull(),
-  content: text('content').notNull(),
-  userId: integer('user_id')
-    .notNull()
-    .references(() => usersTable.id, { onDelete: 'cascade' }),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at')
-    .notNull()
-    .$onUpdate(() => new Date()),
-});
+  export const usersTable = pgTable('users', {
+    SystemID: serial('SystemID').primaryKey(),
+    UserID: integer('UserID').notNull(),
+    UserName: text('UserName').notNull(),
+    Email: text('Email').notNull().unique(),
+    Role: roleEnum('Role').notNull(),
+    DepartmentOrMajor: text('DepartmentOrMajor'),
+    ExtraInfo: text('ExtraInfo'),
+    Status: text('Status'),
+    Password: text('Password').notNull(),
+  });
+  
 
 export type InsertUser = typeof usersTable.$inferInsert;
 export type SelectUser = typeof usersTable.$inferSelect;
-
-export type InsertPost = typeof postsTable.$inferInsert;
-export type SelectPost = typeof postsTable.$inferSelect;
