@@ -2,6 +2,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Input } from "../components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 const roles = ["student", "supervisor", "training rep"];
 
@@ -10,10 +11,12 @@ type FormData = {
   userID: string;
   firstName: string;
   lastName: string;
+  name?: string;
   email: string;
   department?: string;
   studiedHours?: number;
   GPA?: number;
+  extraInfo?: string;
 };
 
 import { Control, UseFormRegister, FieldErrors } from "react-hook-form";
@@ -43,7 +46,7 @@ function UserInfoFields({ register, errors }: { register: UseFormRegister<FormDa
     <>
       <Input 
         {...register("userID", { 
-          required: "User ID is required", 
+          required: true, 
           pattern: { 
             value: /^[0-9]+$/, 
             message: "User ID must contain only numbers" 
@@ -52,14 +55,13 @@ function UserInfoFields({ register, errors }: { register: UseFormRegister<FormDa
         })} 
         placeholder="User ID" 
         type="text" 
-        required 
       />
       {errors.userID && <p className="text-red-500 text-sm">{errors.userID.message}</p>}
       
-      <Input {...register("firstName", { required: true, pattern: { value: /^[A-Za-z]+$/, message: "First Name must contain only letters" }, maxLength: 80 })} placeholder="First Name" required />
+      <Input {...register("firstName", { required: true, maxLength: 80 })} placeholder="First Name" required />
       {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName.message}</p>}
       
-      <Input {...register("lastName", { required: true, pattern: { value: /^[A-Za-z]+$/, message: "Last Name must contain only letters" }, maxLength: 100 })} placeholder="Last Name" required />
+      <Input {...register("lastName", { required: true, maxLength: 100 })} placeholder="Last Name" required />
       {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName.message}</p>}
       
       <Input {...register("email", { required: true, pattern: { value: /^\S+@\S+$/i, message: "Invalid email format" } })} type="email" placeholder="Email" required />
@@ -94,8 +96,23 @@ export default function RoleBasedForm() {
   const { register, handleSubmit, watch, control, formState: { errors } } = useForm<FormData>();
   const role = watch("role");
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form Data Submitted:", data);
+  const onSubmit = async (data: FormData) => {
+    const formattedData = {
+      ...data,
+      name: `${data.firstName} ${data.lastName}`.trim(),
+      extraInfo: data.studiedHours && data.GPA ? `${data.studiedHours} hours, GPA: ${data.GPA}` : undefined,
+    };
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/register", formattedData);
+      console.log("Success:", response.data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error:", error.response ? error.response.data : error.message);
+      } else {
+        console.error("Error:", error);
+      }
+    }
   };
 
   return (

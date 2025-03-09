@@ -4,7 +4,7 @@ import { usersTable } from "../db/schema";
 
 export const addUser = async (req: Request, res: Response): Promise<void> => {
   const { 
-    userid, 
+    userID, 
     name, 
     email, 
     role, 
@@ -14,7 +14,7 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
     status 
   } = req.params; // Access data from URL parameters
 
-  if (!userid || !name || !email || !role || !password || !status) {
+  if (!userID || !name || !email || !role || !password || !status) {
     res.status(400).json({ error: "All fields are required" });
     return;
   }
@@ -27,7 +27,7 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
     }
 
     const insertedUser = await db.insert(usersTable).values({ 
-      UserID: parseInt(userid), // Ensure UserID is a number
+      UserID: parseInt(userID), // Ensure UserID is a number
       UserName: name, 
       Email: email,
       Role: role as "Supervisor" | "Student" | "Training Representative",
