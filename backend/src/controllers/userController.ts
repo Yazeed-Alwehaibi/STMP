@@ -2,6 +2,17 @@ import { Request, Response } from "express";
 import { db } from "../db/index";
 import { usersTable } from "../db/schema";
 
+
+function generateRandomPassword(length: number = 8): string {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      password += chars[randomIndex];
+  }
+  return password;
+}
+
 export const addUser = async (req: Request, res: Response): Promise<void> => {
   const { 
     userID, 
@@ -9,12 +20,10 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
     email, 
     role, 
     department, 
-    extrainfo, 
-    password, 
-    status 
-  } = req.params; // Access data from URL parameters
+    extrainfo,  
+  } = req.body; 
 
-  if (!userID || !name || !email || !role || !password || !status) {
+  if (!userID || !name || !email || !role  ) {
     res.status(400).json({ error: "All fields are required" });
     return;
   }
@@ -33,8 +42,7 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
       Role: role as "Supervisor" | "Student" | "Training Representative",
       DepartmentOrMajor: department,  // Adding the new column for DepartmentOrMajor
       ExtraInfo: extrainfo,                  // Adding the new column for ExtraInfo
-      Password: password,
-      Status: status,
+      Password: generateRandomPassword(),
     }).returning();
 
     res.status(201).json({

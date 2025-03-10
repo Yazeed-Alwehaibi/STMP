@@ -3,30 +3,36 @@ import { Input } from "../components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import { Control } from "react-hook-form";
+import { UseFormRegister, FieldErrors } from "react-hook-form";
 
-const roles = ["student", "supervisor", "training rep"];
 
+
+// Role options for the user
+const roles = ["Supervisor", "Student", "Training Representative"];
+
+// Define Form Data Structure
 type FormData = {
-  role: string;
   userID: string;
   firstName: string;
   lastName: string;
-  name?: string;
   email: string;
+  role: string;
   department?: string;
   studiedHours?: number;
   GPA?: number;
-  extraInfo?: string;
+  extrainfo: string;
 };
 
-import { Control, UseFormRegister, FieldErrors } from "react-hook-form";
+
+
 
 function RoleSelector({ control }: { control: Control<FormData> }) {
   return (
     <Controller
       name="role"
       control={control}
-      defaultValue={roles[1]}
+      defaultValue=""
       render={({ field }) => (
         <RadioGroup onValueChange={field.onChange} value={field.value}>
           {roles.map((r) => (
@@ -41,50 +47,68 @@ function RoleSelector({ control }: { control: Control<FormData> }) {
   );
 }
 
+// User Information Fields
+
 function UserInfoFields({ register, errors }: { register: UseFormRegister<FormData>; errors: FieldErrors<FormData> }) {
   return (
     <>
-      <Input 
+      {/* User ID - Only numbers allowed */}
+      <Input
         {...register("userID", { 
-          required: true, 
-          pattern: { 
-            value: /^[0-9]+$/, 
-            message: "User ID must contain only numbers" 
-          }, 
-          maxLength: { value: 8, message: "User ID cannot exceed 8 digits" } 
-        })} 
-        placeholder="User ID" 
-        type="text" 
+          required: "User ID is required", 
+          pattern: { value: /^[0-9]+$/, message: "User ID must be numeric" }, 
+          maxLength: { value: 8, message: "Max 8 digits allowed" } 
+        })}
+        placeholder="User ID"
+        type="text"
       />
       {errors.userID && <p className="text-red-500 text-sm">{errors.userID.message}</p>}
-      
-      <Input {...register("firstName", { required: true, maxLength: 80 })} placeholder="First Name" required />
+
+      <Input {...register("firstName", { required: "First name is required" })} placeholder="First Name" />
       {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName.message}</p>}
-      
-      <Input {...register("lastName", { required: true, maxLength: 100 })} placeholder="Last Name" required />
+
+      <Input {...register("lastName", { required: "Last name is required" })} placeholder="Last Name" />
       {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName.message}</p>}
-      
-      <Input {...register("email", { required: true, pattern: { value: /^\S+@\S+$/i, message: "Invalid email format" } })} type="email" placeholder="Email" required />
+
+      <Input
+        {...register("email", { 
+          required: "Email is required", 
+          pattern: { value: /^\S+@\S+$/i, message: "Invalid email format" } 
+        })}
+        type="email"
+        placeholder="Email"
+      />
       {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
     </>
   );
 }
 
+// Conditional Fields based on Role
 function ConditionalFields({ register, errors, role }: { register: UseFormRegister<FormData>; errors: FieldErrors<FormData>; role: string }) {
   return (
     <>
-      {(role === "student" || role === "supervisor") && (
+      {(role === "Student" || role === "Supervisor") && (
         <>
-          <Input {...register("department", { maxLength: 30 })} placeholder="Department" required />
+          <Input {...register("department", { required: "Department is required" })} placeholder="Department" />
           {errors.department && <p className="text-red-500 text-sm">{errors.department.message}</p>}
         </>
       )}
-      {role === "student" && (
+
+      {role === "Student" && (
         <>
-          <Input {...register("studiedHours", { required: true, min: 120, maxLength: 3 })} type="number" placeholder="Studied Hours" required />
+          <Input
+            {...register("studiedHours", { required: "Studied hours required", min: 120 })}
+            type="number"
+            placeholder="Studied Hours (Min 120)"
+          />
           {errors.studiedHours && <p className="text-red-500 text-sm">{errors.studiedHours.message}</p>}
-          
-          <Input {...register("GPA", { required: true, min: 0, max: 5 })} type="number" step="0.01" placeholder="GPA" required />
+
+          <Input
+            {...register("GPA", { required: "GPA required", min: 0, max: 5 })}
+            type="number"
+            step="0.01"
+            placeholder="GPA (0-5)"
+          />
           {errors.GPA && <p className="text-red-500 text-sm">{errors.GPA.message}</p>}
         </>
       )}
@@ -97,14 +121,19 @@ export default function RoleBasedForm() {
   const role = watch("role");
 
   const onSubmit = async (data: FormData) => {
+    console.log("Submitting form:", data);
+    
     const formattedData = {
-      ...data,
-      name: `${data.firstName} ${data.lastName}`.trim(),
-      extraInfo: data.studiedHours && data.GPA ? `${data.studiedHours} hours, GPA: ${data.GPA}` : undefined,
+      userID: data.userID,
+      name: `${data.firstName} ${data.lastName}`.trim(), // Combine firstName + lastName
+      email: data.email,
+      role: data.role,
+      department: data.department || undefined,
+      extrainfo: data.studiedHours && data.GPA ? `${data.studiedHours} hours, GPA: ${data.GPA}` : undefined, // Format extraInfo
     };
-
+  
     try {
-      const response = await axios.post("http://localhost:5000/api/register", formattedData);
+      const response = await axios.post("http://localhost:3000/api/register/", formattedData);
       console.log("Success:", response.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
