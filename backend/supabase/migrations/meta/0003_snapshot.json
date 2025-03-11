@@ -1,0 +1,288 @@
+{
+  "id": "69ebbb2c-bc26-488b-b25b-61732ed77e5c",
+  "prevId": "8e2d21e8-9458-40dc-98ad-3a1987571e99",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.application": {
+      "name": "application",
+      "schema": "",
+      "columns": {
+        "ApplicationID": {
+          "name": "ApplicationID",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "supervisorID": {
+          "name": "supervisorID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "repID": {
+          "name": "repID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "venueID": {
+          "name": "venueID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "endDate": {
+          "name": "endDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "application_supervisorID_users_SystemID_fk": {
+          "name": "application_supervisorID_users_SystemID_fk",
+          "tableFrom": "application",
+          "tableTo": "users",
+          "columnsFrom": [
+            "supervisorID"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "application_studentID_users_SystemID_fk": {
+          "name": "application_studentID_users_SystemID_fk",
+          "tableFrom": "application",
+          "tableTo": "users",
+          "columnsFrom": [
+            "studentID"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "application_repID_users_SystemID_fk": {
+          "name": "application_repID_users_SystemID_fk",
+          "tableFrom": "application",
+          "tableTo": "users",
+          "columnsFrom": [
+            "repID"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "application_venueID_Venue_venueID_fk": {
+          "name": "application_venueID_Venue_venueID_fk",
+          "tableFrom": "application",
+          "tableTo": "Venue",
+          "columnsFrom": [
+            "venueID"
+          ],
+          "columnsTo": [
+            "venueID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "SystemID": {
+          "name": "SystemID",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "UserID": {
+          "name": "UserID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "UserName": {
+          "name": "UserName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Email": {
+          "name": "Email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Role": {
+          "name": "Role",
+          "type": "Role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "DepartmentOrMajor": {
+          "name": "DepartmentOrMajor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ExtraInfo": {
+          "name": "ExtraInfo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Status": {
+          "name": "Status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Password": {
+          "name": "Password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_Email_unique": {
+          "name": "users_Email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "Email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Venue": {
+      "name": "Venue",
+      "schema": "",
+      "columns": {
+        "venueID": {
+          "name": "venueID",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "venueName": {
+          "name": "venueName",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "repID": {
+          "name": "repID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "departments": {
+          "name": "departments",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "website": {
+          "name": "website",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Venue_repID_users_SystemID_fk": {
+          "name": "Venue_repID_users_SystemID_fk",
+          "tableFrom": "Venue",
+          "tableTo": "users",
+          "columnsFrom": [
+            "repID"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.Role": {
+      "name": "Role",
+      "schema": "public",
+      "values": [
+        "Supervisor",
+        "Student",
+        "Training Representative"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

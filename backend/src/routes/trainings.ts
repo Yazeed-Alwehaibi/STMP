@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "../db/index"; // Ensure correct path
-import { usersTable } from "../db/schema";
+import { usersTable } from "../db/schema/users";
 
 const router = Router();
 
