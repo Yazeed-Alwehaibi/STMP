@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { db } from "../db/index";
 import { usersTable } from "../db/schema/users";
+import { AuthRequest } from "../middleware/auth";
+import { eq } from "drizzle-orm";
 
 
 function generateRandomPassword(length: number = 8): string {
@@ -63,4 +65,19 @@ export const getUsers = async (_req: Request, res: Response) => {
     console.error(error);
     res.status(500).json({ error: "Database error" });
   }
+};
+
+export const getProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+  if (!req.user) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+  const UserID = parseInt(req.user.userId, 10);
+  const user = await db.select().from(usersTable).where(eq(usersTable.UserID, UserID)).limit(1);
+  if (!user.length) {
+    res.status(404).json({ message: "User not found" });
+    return;
+  }
+
+  res.json({ user: { id: user[0].UserID, email: user[0].Email } });
 };

@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import trainingsRouter from "./routes/trainings"; // Import route
+import authRoutes from "./routes/auth";
+
 
 const app = express();
 const port = 3000;

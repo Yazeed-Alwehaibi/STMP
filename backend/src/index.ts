@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes';
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import authRoutes from "./routes/auth";
+
 
 
 
@@ -17,6 +20,7 @@ app.use(bodyParser.json()); // Parses incoming JSON data
 
 
 app.use('/api', userRoutes);
+app.use("/api", authRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Backend for Summer Training Management System is running!');

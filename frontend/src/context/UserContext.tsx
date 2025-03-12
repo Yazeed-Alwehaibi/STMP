@@ -1,0 +1,33 @@
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { getProfile, logoutUser } from "../api/auth";
+
+interface User {
+    userId: string;
+    email: string;
+}
+
+interface UserContextType {
+    user: User | null;
+    logout: () => void;
+}
+
+const UserContext = createContext<UserContextType>({ user: null, logout: () => {} });
+
+export const UserProvider = ({ children }: { children: ReactNode }) => {
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        getProfile().then((data) => {
+            if (data.user) setUser(data.user);
+        });
+    }, []);
+
+    const logout = async () => {
+        await logoutUser();
+        setUser(null);
+    };
+
+    return <UserContext.Provider value={{ user, logout }}>{children}</UserContext.Provider>;
+};
+
+export const useUser = () => useContext(UserContext);

@@ -1,5 +1,7 @@
 import express from "express";
 import { addUser, getUsers } from "../controllers/userController";
+import { getProfile } from "../controllers/userController";
+import { authenticateUser } from "../middleware/auth";
 
 const router = express.Router();
 
@@ -9,6 +11,7 @@ router.get("/all", getUsers);
 
 router.post("/register", addUser);
 
+router.get("/profile", authenticateUser, getProfile);
 
 
 export default router;
