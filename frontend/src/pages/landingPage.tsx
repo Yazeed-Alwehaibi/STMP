@@ -4,20 +4,37 @@ import RoutingMethods from './routing/RoutingMethods';
 import { useState } from "react";
 import { loginUser } from "../api/auth";
 import { useUser } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
 
 const TextInput = () => {
-  const { regPage, studentHome, supervisorHome, repHome } = RoutingMethods();
+  const { regPage, studentHome, supervisorHome, repHome,indexPage } = RoutingMethods();
 
   const { user } = useUser();
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const data = await loginUser(email, password);
-    if (data.user) navigate("/dashboard"); // Redirect to dashboard on success
+    console.log("User role:", data.user.role);
+    if (data.user) {
+      switch (data.user.role) {
+          case "Student":
+              studentHome(); 
+              console.log("Redirecting to student home");
+              break;
+          case "Supervisor":
+              supervisorHome();
+              console.log("Redirecting to supervisor home");
+              break;
+          case "Training Representative":
+              repHome();
+              console.log("Redirecting to training rep home");
+              break;
+          default:
+              indexPage();
+              console.log("Redirecting to index page");
+      } 
+    } 
   };
 
   return (

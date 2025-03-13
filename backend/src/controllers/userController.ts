@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "../db/index";
-import { usersTable } from "../db/schema/users";
+import { roleEnum, usersTable } from "../db/schema/users";
 import { AuthRequest } from "../middleware/auth";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
@@ -84,5 +84,5 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
     return;
   }
 
-  res.json({ user: { id: user[0].UserID, email: user[0].Email } });
+  res.json({ user: { id: user[0].UserID, email: user[0].Email, role: user[0].Role} });
 };

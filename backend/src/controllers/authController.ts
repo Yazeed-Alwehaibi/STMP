@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { db } from "../db";
-import { usersTable } from "../db/schema/users";
+import jwt from "jsonwebtoken";
+import { db } from "../db"; // Adjust based on your setup
+import { usersTable } from "../db/schema/users"; // Adjust the import
 import { eq } from "drizzle-orm";
 
-const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key"; // Use env variables
+
+const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key";
 
 export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
@@ -25,13 +26,27 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Generate JWT
-    const token = jwt.sign({ userId: user[0].UserID, email: user[0].Email }, SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign(
+        { userId: user[0].UserID, email: user[0].Email, role: user[0].Role },
+        SECRET_KEY,
+        { expiresIn: "1h" }
+    );
 
     // Set HTTP-only cookie
     res.cookie("token", token, { httpOnly: true, secure: true, sameSite: "strict" });
 
-    res.json({ message: "Login successful" });
+    // ✅ Send user data in response
+    res.json({
+        message: "Login successful",
+        user: {
+            id: user[0].UserID,
+            email: user[0].Email,
+            role: user[0].Role, // ✅ Now included in response
+        },
+        token, // Optional
+    });
 };
+
 
 export const logout = (req: Request, res: Response) => {
     res.clearCookie("token");
