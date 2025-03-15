@@ -5,8 +5,12 @@ import { db } from "../db"; // Adjust based on your setup
 import { usersTable } from "../db/schema/users"; // Adjust the import
 import { eq } from "drizzle-orm";
 
-
 const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key";
+
+const getUserRole = async (email: string) => {
+    const user = await db.select().from(usersTable).where(eq(usersTable.Email, email)).limit(1);
+    return user.length ? user[0].Role : null;
+};
 
 export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
@@ -25,9 +29,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    // Get user role
+    const role = await getUserRole(email);
+
     // Generate JWT
     const token = jwt.sign(
-        { userId: user[0].UserID, email: user[0].Email, role: user[0].Role },
+        { userId: user[0].UserID, email: user[0].Email, role },
         SECRET_KEY,
         { expiresIn: "1h" }
     );
@@ -41,12 +48,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         user: {
             id: user[0].UserID,
             email: user[0].Email,
-            role: user[0].Role, // ✅ Now included in response
+            role,
         },
         token, // Optional
     });
 };
-
 
 export const logout = (req: Request, res: Response) => {
     res.clearCookie("token");

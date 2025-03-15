@@ -1,8 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import RegistrationPage from "./pages/RegistrationPage";
-import StudentRegistrationPage from "./pages/student/registrationPage";
-import SupervisorRegistrationPage from "./pages/supervisor/registrationPage";
-import RepRegistrationPage from "./pages/trainingRep/registrationPage";
 import StudentHomePage from "./pages/student/homePage";
 import SupervisorHomePage from "./pages/supervisor/homePage";
 import RepHomePage from "./pages/trainingRep/homePage";
@@ -15,6 +12,10 @@ import SupervisorPresentationPage from "./pages/supervisor/presentationPage";
 import RepApplicationPage from "./pages/trainingRep/applicationPage";
 import RepReportPage from "./pages/trainingRep/reportPage";
 import RepOffersPage from "./pages/trainingRep/offersPage";
+import ApplyOwn from './pages/student/application/own'
+import VenueSuggestion from './pages/student/application/suggest'
+import Offers from './pages/student/application/offers'
+
 
 import { UserProvider } from "./context/UserContext";
 import Login from "./pages/landingPage"; // Use Login instead of LandingPage
@@ -32,9 +33,6 @@ export default function App() {
 
                     {/* Registration Pages */}
                     <Route path="/registrationPage" element={<RegistrationPage />} />
-                    <Route path="/studentRegistrationPage" element={<StudentRegistrationPage />} />
-                    <Route path="/supervisorRegistrationPage" element={<SupervisorRegistrationPage />} />
-                    <Route path="/repRegistrationPage" element={<RepRegistrationPage />} />
 
                     {/* Protected Home Pages */}
                     <Route path="/studentHomePage" element={<ProtectedRoute><StudentHomePage /></ProtectedRoute>} />
@@ -42,9 +40,16 @@ export default function App() {
                     <Route path="/repHomePage" element={<ProtectedRoute><RepHomePage /></ProtectedRoute>} />
 
                     {/* Protected Student Pages */}
-                    <Route path="/studentApplicationPage" element={<ProtectedRoute><StudentApplicationPage /></ProtectedRoute>} />
+                    <Route path="/studentApplicationPage" element={<ProtectedRoute><StudentApplicationPage /></ProtectedRoute>}>
+                    <Route path="applyOwn" element={<ApplyOwn />} />
+                    <Route path="venueSuggestion" element={<VenueSuggestion />} />
+                    <Route path="offers" element={<Offers />} />
+                    </Route>
+
+
                     <Route path="/studentReportPage" element={<ProtectedRoute><StudentReportPage /></ProtectedRoute>} />
                     <Route path="/studentPresentationPage" element={<ProtectedRoute><StudentPresentationPage /></ProtectedRoute>} />
+                    
 
                     {/* Protected Supervisor Pages */}
                     <Route path="/supervisorApplicationPage" element={<ProtectedRoute><SupervisorApplicationPage /></ProtectedRoute>} />
