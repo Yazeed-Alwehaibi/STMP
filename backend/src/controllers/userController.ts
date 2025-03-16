@@ -77,12 +77,22 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
+
   const UserID = parseInt(req.user.userId, 10);
   const user = await db.select().from(usersTable).where(eq(usersTable.UserID, UserID)).limit(1);
+
   if (!user.length) {
     res.status(404).json({ message: "User not found" });
     return;
   }
 
-  res.json({ user: { id: user[0].UserID, email: user[0].Email, role: user[0].Role} });
+  res.json({ 
+    user: { 
+      id: user[0].UserID, 
+      userId: user[0].UserID,  // Returning userID explicitly
+      userName: user[0].UserName, // Assuming there's a UserName column in the DB
+      email: user[0].Email, 
+      role: user[0].Role 
+    } 
+  });
 };

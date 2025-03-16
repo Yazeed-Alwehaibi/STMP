@@ -7,34 +7,31 @@ import { eq } from "drizzle-orm";
 
 const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key";
 
-const getUserRole = async (email: string) => {
+const getUserDetails = async (email: string) => {
     const user = await db.select().from(usersTable).where(eq(usersTable.Email, email)).limit(1);
-    return user.length ? user[0].Role : null;
+    return user.length ? user[0] : null;
 };
 
 export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
     // Find user in database
-    const user = await db.select().from(usersTable).where(eq(usersTable.Email, email)).limit(1);
-    if (!user.length) {
+    const user = await getUserDetails(email);
+    if (!user) {
         res.status(401).json({ message: "User not found" });
         return;
     }
 
     // Validate password
-    const validPassword = await bcrypt.compare(password, user[0].Password);
+    const validPassword = await bcrypt.compare(password, user.Password);
     if (!validPassword) {
         res.status(401).json({ message: "Invalid credentials" });
         return;
     }
 
-    // Get user role
-    const role = await getUserRole(email);
-
     // Generate JWT
     const token = jwt.sign(
-        { userId: user[0].UserID, email: user[0].Email, role },
+        { userId: user.UserID, email: user.Email, username: user.UserName, role: user.Role },
         SECRET_KEY,
         { expiresIn: "1h" }
     );
@@ -46,9 +43,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     res.json({
         message: "Login successful",
         user: {
-            id: user[0].UserID,
-            email: user[0].Email,
-            role,
+            id: user.UserID,
+            email: user.Email,
+            username: user.UserName,
+            role: user.Role,
         },
         token, // Optional
     });
