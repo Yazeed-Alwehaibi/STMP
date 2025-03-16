@@ -1,0 +1,1 @@
+ALTER TABLE "Venue" ALTER COLUMN "venueID" SET DATA TYPE serial;

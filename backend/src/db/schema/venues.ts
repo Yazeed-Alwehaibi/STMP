@@ -1,10 +1,10 @@
-import { pgTable, integer, varchar, text, index } from "drizzle-orm/pg-core";
+import { pgTable, integer, varchar, text, index,serial } from "drizzle-orm/pg-core";
 import { usersTable } from "./users";
 
 export const venues = pgTable(
   "Venue",
   {
-    venueID: integer("venueID").primaryKey(),
+    venueID: serial("venueID").primaryKey(),
     venueName: varchar("venueName", { length: 100 }),
     repID: integer("repID").references(() => usersTable.SystemID),
     location: varchar("location", { length: 100 }),

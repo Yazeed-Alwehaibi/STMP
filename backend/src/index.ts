@@ -5,6 +5,7 @@ import userRoutes from './routes/userRoutes';
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth";
+import studentRoutes from './routes/studentRoutes'
 
 dotenv.config();
 const app: Application = express();
@@ -23,6 +24,7 @@ app.use(cookieParser()); // ✅ Required for handling cookies
 // Routes
 app.use('/api', userRoutes);
 app.use("/api", authRoutes);
+app.use("/api",studentRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Backend for Summer Training Management System is running!');

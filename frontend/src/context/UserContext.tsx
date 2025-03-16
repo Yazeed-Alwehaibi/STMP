@@ -2,9 +2,10 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { getProfile, logoutUser } from "../api/auth";
 
 interface User {
+    systemID: string;
     userId: string;
     email: string;
-    userName: string
+    userName: string;
 }
 
 interface UserContextType {
@@ -18,17 +19,24 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        // Get the user profile only when the component mounts
-        getProfile().then((data) => {
-            if (data.user) {
-                setUser(data.user); // Only update if there's a user
+        const fetchProfile = async () => {
+            try {
+                const data = await getProfile();
+                console.log("User profile response:", data); // Debugging log ✅
+                if (data.user) {
+                    setUser(data.user);
+                }
+            } catch (error) {
+                console.error("Error fetching profile:", error); // Handle API errors ✅
             }
-        });
-    }, []); // Empty dependency array ensures this runs only on mount
+        };
+
+        fetchProfile();
+    }, []);
 
     const logout = async () => {
         await logoutUser();
-        setUser(null); // Clear the user state on logout
+        setUser(null);
     };
 
     return <UserContext.Provider value={{ user, logout }}>{children}</UserContext.Provider>;

@@ -86,11 +86,14 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
     return;
   }
 
+  console.log("Fetched User Data:", user[0]); // ✅ Debugging log
+
   res.json({ 
     user: { 
       id: user[0].UserID, 
-      userId: user[0].UserID,  // Returning userID explicitly
-      userName: user[0].UserName, // Assuming there's a UserName column in the DB
+      systemID: user[0].SystemID, // ✅ Ensure this exists
+      userId: user[0].UserID,  
+      userName: user[0].UserName, 
       email: user[0].Email, 
       role: user[0].Role 
     } 
