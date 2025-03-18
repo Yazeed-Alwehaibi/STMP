@@ -31,7 +31,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     // Generate JWT
     const token = jwt.sign(
-        { userId: user.UserID, email: user.Email, username: user.UserName, role: user.Role },
+        { systemID: user.SystemID, userId: user.UserID, email: user.Email, username: user.UserName, role: user.Role },
         SECRET_KEY,
         { expiresIn: "1h" }
     );
@@ -43,6 +43,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     res.json({
         message: "Login successful",
         user: {
+            systemId: user.SystemID,
             id: user.UserID,
             email: user.Email,
             username: user.UserName,

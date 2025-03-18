@@ -78,8 +78,10 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
     return;
   }
 
-  const UserID = parseInt(req.user.userId, 10);
-  const user = await db.select().from(usersTable).where(eq(usersTable.UserID, UserID)).limit(1);
+  const systemID = parseInt(req.user.systemID, 10);
+  console.log("SystemID from request:", systemID); // Debugging log
+
+  const user = await db.select().from(usersTable).where(eq(usersTable.SystemID, systemID)).limit(1);
 
   if (!user.length) {
     res.status(404).json({ message: "User not found" });
@@ -90,12 +92,12 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
 
   res.json({ 
     user: { 
-      id: user[0].UserID, 
-      systemID: user[0].SystemID, // ✅ Ensure this exists
-      userId: user[0].UserID,  
+      id: user[0].SystemID,  // ✅ Return systemID as the primary identifier
+      systemID: user[0].SystemID,  
       userName: user[0].UserName, 
       email: user[0].Email, 
       role: user[0].Role 
     } 
   });
 };
+

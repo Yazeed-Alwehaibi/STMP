@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { db } from "../db/index";
-import { applications } from "../db/schema/application";
-import { venues } from "../db/schema/venues";
+import { db } from "../../db/index";
+import { applications } from "../../db/schema/application";
+import { venues } from "../../db/schema/venues";
 import { eq } from "drizzle-orm";
 
 export const applyOwn = async (req: Request, res: Response): Promise<void> => {
