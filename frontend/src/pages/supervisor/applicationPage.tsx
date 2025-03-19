@@ -81,6 +81,9 @@ export default function SupervisorApplications() {
       if (response.ok) {
         const data = await response.json();
         console.log("Application accepted:", data);
+        alert("Application accepted!");
+        setOpen(false);
+        fetchApplications();
       } else {
         const errorData = await response.json();
         console.error("Error accepting application:", errorData);
@@ -92,15 +95,16 @@ export default function SupervisorApplications() {
   
   
 
-  const handleDeny = async () => {
+  const handleRejection = async () => {
     if (selectedApplication) {
       try {
-        const response = await fetch("http://localhost:3000/api/applications/deny", {
+        const response = await fetch("http://localhost:3000/api/applications/reject", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ applicationId: selectedApplication.applicationID }),
+          body: JSON.stringify({ applicationId: selectedApplication.applicationID , supervisorID: user?.systemID }),
+          credentials: "include",
         });
 
         if (response.ok) {
@@ -171,10 +175,10 @@ export default function SupervisorApplications() {
                 Accept
               </button>
               <button
-                onClick={handleDeny}
+                onClick={handleRejection}
                 className="px-4 py-2 bg-red-500 text-white rounded"
               >
-                Deny
+                reject
               </button>
             </div>
           </DialogContent>

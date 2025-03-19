@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "../../db/index"; // Adjust path based on your project structure
 import { applications } from "../../db/schema/application";
-import { usersTable } from "../../db/schema/users";
-import { venues } from "../../db/schema/venues";
-import { eq, isNull, and } from "drizzle-orm";
+import { eq} from "drizzle-orm";
 import { AuthRequest } from "../../middleware/auth";
 
 // Accept a student application and set the status to 'accepted'
@@ -43,9 +41,9 @@ export const acceptApplication = async (req: AuthRequest, res: Response): Promis
 };
 
 // Deny a student application and set the status to 'denied'
-export const denyApplication = async (req: AuthRequest, res: Response): Promise<void> => {
+export const rejectApplication = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { applicationId } = req.body; // Get applicationId from request body
+    const { applicationId, supervisorID } = req.body; // Get applicationId and supervisorID from request body
 
     // Ensure systemID exists in req.user
     const supervisorId = req.user?.systemID;
@@ -54,10 +52,15 @@ export const denyApplication = async (req: AuthRequest, res: Response): Promise<
       return;
     }
 
+    if (supervisorID !== supervisorId) {
+      res.status(403).json({ error: "Forbidden: Supervisor ID mismatch" });
+      return;
+    }
+
     // Update the application status to 'denied'
     const updated = await db
       .update(applications)
-      .set({ status: 'denied' })
+      .set({ status: 'denied', supervisorID: Number(supervisorId) })
       .where(eq(applications.ApplicationID, applicationId));
 
     if (updated.count === 0) {
