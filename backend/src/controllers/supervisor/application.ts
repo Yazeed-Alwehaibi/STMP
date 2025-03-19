@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { db } from "../../db/index"; // Adjust path based on your project structure
-import { applications } from "../../db/schema/application"; // Assuming applications & users tables
+import { applications } from "../../db/schema/application";
 import { usersTable } from "../../db/schema/users";
+import { venues } from "../../db/schema/venues";
 import { eq, isNull, and } from "drizzle-orm";
 import { AuthRequest } from "../../middleware/auth";
 
@@ -10,8 +11,8 @@ export const getUnassignedStudents = async (req: AuthRequest, res: Response): Pr
     // Ensure systemID exists in req.user
     const supervisorId = req.user?.systemID;
     if (!supervisorId) {
-      res.status(401).json({ error: "Unauthorized" }); // Send the error response here
-      return; // Return to stop further execution
+      res.status(401).json({ error: "Unauthorized" });
+      return;
     }
 
     // Get the supervisor's department
@@ -23,34 +24,42 @@ export const getUnassignedStudents = async (req: AuthRequest, res: Response): Pr
 
     if (!supervisor.length) {
       console.error("Supervisor not found:", supervisorId);
-      res.status(404).json({ error: "Supervisor not found" }); // Send the error response here
-      return; // Return to stop further execution
+      res.status(404).json({ error: "Supervisor not found" });
+      return;
     }
 
     const department = supervisor[0].department;
-
-    // If department is null, handle the error
     if (department === null) {
-      res.status(400).json({ error: "Supervisor does not have a department assigned" }); // Send the error response here
-      return; // Return to stop further execution
+      res.status(400).json({ error: "Supervisor does not have a department assigned" });
+      return;
     }
 
-    // Fetch students from the same department without a supervisor
-    const unassignedStudents = await db
-      .select()
-      .from(applications)
-      .innerJoin(usersTable, eq(applications.studentID, usersTable.SystemID)) // Assuming studentID is used to link with users
-      .where(and(isNull(applications.supervisorID), eq(usersTable.DepartmentOrMajor, department))); // No assigned supervisor and same department
+    // Fetch unique unassigned students along with their training venue details
+      const unassignedStudents = await db
+    .select({
+      applicationID: applications.ApplicationID,
+      studentName: usersTable.UserName,
+      studentID: usersTable.SystemID,
+      trainingVenueName: venues.venueName,
+      trainingVenueWebsite: venues.website,
+    })
+    .from(applications)
+    .innerJoin(usersTable, eq(applications.studentID, usersTable.SystemID))
+    .innerJoin(venues, eq(applications.venueID, venues.venueID))
+    .where(and(isNull(applications.supervisorID), eq(usersTable.DepartmentOrMajor, department)))
+    .groupBy(applications.ApplicationID, usersTable.SystemID, usersTable.UserName, venues.venueName, venues.website)
+    .orderBy(applications.ApplicationID);
+
+
 
     if (unassignedStudents.length === 0) {
-      res.status(404).json({ message: "No unassigned students found in your department" }); // Send the response here
-      return; // Return to stop further execution
+      res.status(404).json({ message: "No unassigned students found in your department" });
+      return;
     }
 
-    res.json(unassignedStudents); // Send the unassigned students list
-
+    res.json(unassignedStudents);
   } catch (error) {
     console.error("Error fetching unassigned students:", error);
-    res.status(500).json({ error: "Internal server error" }); // Send the error response here
+    res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -92,7 +92,7 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
 
   res.json({ 
     user: { 
-      id: user[0].SystemID,  // ✅ Return systemID as the primary identifier
+      id: user[0].UserID,  // ✅ Return systemID as the primary identifier
       systemID: user[0].SystemID,  
       userName: user[0].UserName, 
       email: user[0].Email, 
