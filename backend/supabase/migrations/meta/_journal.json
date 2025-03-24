@@ -50,6 +50,20 @@
       "when": 1742114997043,
       "tag": "0006_daffy_mister_fear",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1742728218761,
+      "tag": "0007_small_dragon_lord",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1742728691782,
+      "tag": "0008_graceful_rictor",
+      "breakpoints": true
     }
   ]
 }
