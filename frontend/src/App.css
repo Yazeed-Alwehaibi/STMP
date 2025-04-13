@@ -4,15 +4,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  height: 100%;
+  width: 100%;
 }
 
 :root {
-  --background: rgb(81, 181, 214);
+  justify-content: center;
+  --background: white;
   --foreground: black;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.13 0.028 261.692);
@@ -128,5 +135,9 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.Button {
+  @apply rounded-sm border bg-white text-black hover:bg-gray-500 transition duration-300
 }
 
