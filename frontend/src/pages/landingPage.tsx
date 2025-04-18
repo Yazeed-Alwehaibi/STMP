@@ -1,40 +1,39 @@
 import '../App.css';
 import Button from '../components/buttons/button';
-import RoutingMethods from './routing/RoutingMethods';
 import { useState } from "react";
 import { loginUser } from "../api/auth";
 import { useUser } from "../context/UserContext";
+import RoutingMethods from './routing/RoutingMethods';
+
 
 const TextInput = () => {
   const { regPage, studentHome, supervisorHome, repHome,indexPage } = RoutingMethods();
-
-  const { user } = useUser();
+  const { setUser, user } = useUser();  // <- make sure your context provides setUser
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const data = await loginUser(email, password);
-    console.log("User role:", data.user.role);
+
     if (data.user) {
+      console.log("User role:", data.user.role);
+      setUser(data.user); // update context
+
       switch (data.user.role) {
-          case "Student":
-              studentHome(); 
-              console.log("Redirecting to student home");
-              break;
-          case "Supervisor":
-              supervisorHome();
-              console.log("Redirecting to supervisor home");
-              break;
-          case "Training Representative":
-              repHome();
-              console.log("Redirecting to training rep home");
-              break;
-          default:
-              indexPage();
-              console.log("Redirecting to index page");
-      } 
-    } 
+        case "Student":
+          studentHome();
+          break;
+        case "Supervisor":
+          supervisorHome();
+          break;
+        case "Training Representative":
+          repHome();
+          break;
+        default:
+          indexPage();
+      }
+    }
   };
 
   return (
@@ -43,7 +42,7 @@ const TextInput = () => {
       <br />
       <div className="flex flex-col items-center mt-20">
         <h2 className="text-2xl font-bold mb-4">Login</h2>
-        {user && <p>Already logged in as {user.email}</p>} {/* Remove usersTable */}
+        {user && <p>Already logged in as {user.email}</p>}
         <form onSubmit={handleLogin} className="flex flex-col gap-3">
           <input
             className="bg-white"
@@ -70,10 +69,10 @@ const TextInput = () => {
       <h2>Temporary buttons</h2>
       <br />
       <div className="flex justify-center space-x-4">
-        <Button buttonName="Register" onClick={regPage} />
-        <Button buttonName="stu Home Page" onClick={studentHome} />
-        <Button buttonName="super HomePage" onClick={supervisorHome} />
-        <Button buttonName="rep HomePage" onClick={repHome} />
+        <Button buttonName="Register" onClick={() => regPage()} />
+        <Button buttonName="stu Home Page" onClick={() => studentHome()} />
+        <Button buttonName="super HomePage" onClick={() => supervisorHome()} />
+        <Button buttonName="rep HomePage" onClick={() => repHome()} />
       </div>
     </>
   );
