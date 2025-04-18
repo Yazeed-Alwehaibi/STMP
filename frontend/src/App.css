@@ -137,7 +137,7 @@ html, body {
   }
 }
 
-.Button {
-  @apply rounded-sm border bg-white text-black hover:bg-gray-500 transition duration-300
+.button-hover {
+  @apply hover:bg-gray-500 transition duration-300
 }
 
