@@ -1,32 +1,51 @@
 import { Request, Response } from "express";
 import { db } from "../../db";
 import { reports } from "../../db/schema/reports";
-import { eq } from "drizzle-orm";
+import { usersTable } from "../../db/schema/users"; // <-- import your user table
+import { eq, and, isNull } from "drizzle-orm";
 
-// Get reports assigned to a supervisor
+// GET /api/reports?supervisorID=123
+
 export const getReportsBySupervisor = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { supervisorID } = req.query; // Extract supervisorID from the query string
-  
-      if (!supervisorID) {
-        res.status(400).json({ error: "SupervisorID is required" });
-        return; // Make sure to return to prevent further execution
-      }
-  
-      const supervisorReports = await db
-        .select()
-        .from(reports) // Fetch reports based on supervisorID
-        .where(eq(reports.supervisorID, Number(supervisorID)));
-  
-      res.json(supervisorReports); // Send the reports as JSON
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal server error" });
-    }
-  };
-  
+  try {
+    const { supervisorID } = req.query;
 
-// Mark a report and provide feedback
+    if (!supervisorID) {
+      res.status(400).json({ error: "SupervisorID is required" });
+      return;
+    }
+
+    const supervisorReports = await db
+      .select({
+        id: reports.reportID,
+        studentName: usersTable.UserName, // adjust if name is different
+        supervisorID: reports.supervisorID,
+        mark: reports.mark,
+        feedback: reports.feedback,
+      })
+      .from(reports)
+      .innerJoin(usersTable, eq(reports.studentID, usersTable.SystemID)) // updated to use usersTable
+      .where(
+        and(
+          eq(reports.supervisorID, Number(supervisorID)),
+          isNull(reports.mark) // only unmarked reports
+        )
+      );
+    // Convert report ID to string if needed
+    const formatted = supervisorReports.map((r) => ({
+      ...r,
+      id: String(r.id),
+    }));
+
+    res.status(200).json(formatted);
+  } catch (error) {
+    console.error("Error fetching reports:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+// POST /api/reports/:reportID/mark
 export const markReport = async (req: Request, res: Response): Promise<void> => {
   try {
     const { reportID } = req.params;
@@ -40,10 +59,11 @@ export const markReport = async (req: Request, res: Response): Promise<void> => 
     await db
       .update(reports)
       .set({ mark, feedback })
-      .where(eq(reports.reportID, parseInt(reportID, 10)));
+      .where(eq(reports.reportID, Number(reportID)));
 
-    res.json({ message: "Report marked successfully" });
+    res.status(200).json({ message: "Report marked successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Error updating report" });
+    console.error("Error marking report:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

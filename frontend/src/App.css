@@ -19,7 +19,7 @@ html, body {
 
 :root {
   justify-content: center;
-  --background: white;
+  --background: rgb(255, 255, 255);
   --foreground: black;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.13 0.028 261.692);

@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes';
+import path from 'path';
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth";
@@ -21,6 +22,9 @@ app.use(cors({
 app.use(express.json());
 app.use(bodyParser.json()); // Parses incoming JSON data
 app.use(cookieParser()); // ✅ Required for handling cookies
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 // Routes
 app.use('/api', userRoutes);

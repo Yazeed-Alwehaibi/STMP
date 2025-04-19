@@ -53,32 +53,50 @@ export default function ReportMarkingPage() {
   }, [supervisorID]);
 
   const handleSubmit = async () => {
-    if (!selectedReport) return;
+    if (!selectedReport || !selectedReport.id) {
+      setError("No report selected.");
+      return;
+    }
+  
     if (mark === undefined || mark < 0 || mark > 100) {
       setError("Please enter a valid mark between 0 and 100.");
       return;
     }
-
+  
     setLoading(true);
-    await fetch(`/api/reports/${selectedReport.id}/mark`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mark, feedback }),
-    })
-      .then(() => {
-        setReports((prev) =>
-          prev.map((report) =>
-            report.id === selectedReport.id ? { ...report, mark, feedback } : report
-          )
-        );
-        setSelectedReport(null);
-        setMark(undefined);
-        setFeedback("");
-        setError(null);
-      })
-      .catch((err) => setError("Error marking report: " + err.message))
-      .finally(() => setLoading(false));
+  
+    try {
+      const response = await fetch(`http://localhost:3000/api/reports/${selectedReport.id}/mark`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mark, feedback }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to submit mark.");
+      }
+  
+      setReports((prev) =>
+        prev.map((report) =>
+          report.id === selectedReport.id ? { ...report, mark, feedback } : report
+        )
+      );
+  
+      setSelectedReport(null);
+      setMark(undefined);
+      setFeedback("");
+      setError(null);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError("Error marking report: " + err.message);
+      } else {
+        setError("An unknown error occurred.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   return (
     <div className="p-6">
