@@ -1,3 +1,4 @@
+// pages/ReportMarkingPage.tsx
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,57 +32,62 @@ export default function ReportMarkingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const supervisorID = user?.systemID;
-
   useEffect(() => {
-    if (!supervisorID) return;
+    if (!user?.systemID) return;
 
-    setLoading(true);
-    fetch(`http://localhost:3000/api/reports?supervisorID=${supervisorID}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch reports");
-        }
-        return res.json();
-      })
-      .then((data) => {
+    const fetchReports = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:3000/api/reports?supervisorID=${user.systemID}`);
+        if (!response.ok) throw new Error("Failed to fetch reports");
+
+        const data = await response.json();
         setReports(data);
         setError(null);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [supervisorID]);
+      } catch (err: unknown) {
+          if (err instanceof Error) {
+            setError(err.message);
+          } else {
+            setError("An unknown error occurred.");
+          }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, [user?.systemID]);
 
   const handleSubmit = async () => {
-    if (!selectedReport || !selectedReport.id) {
+    if (!selectedReport?.id) {
       setError("No report selected.");
       return;
     }
-  
+
     if (mark === undefined || mark < 0 || mark > 100) {
       setError("Please enter a valid mark between 0 and 100.");
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       const response = await fetch(`http://localhost:3000/api/reports/${selectedReport.id}/mark`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mark, feedback }),
       });
-  
-      if (!response.ok) {
-        throw new Error("Failed to submit mark.");
-      }
-  
+
+      if (!response.ok) throw new Error("Failed to submit mark.");
+
+      alert("Mark submitted successfully!");
+
       setReports((prev) =>
-        prev.map((report) =>
-          report.id === selectedReport.id ? { ...report, mark, feedback } : report
+        prev.map((r) =>
+          r.id === selectedReport.id ? { ...r, mark, feedback } : r
         )
       );
-  
+
       setSelectedReport(null);
       setMark(undefined);
       setFeedback("");
@@ -90,14 +96,12 @@ export default function ReportMarkingPage() {
       if (err instanceof Error) {
         setError("Error marking report: " + err.message);
       } else {
-        setError("An unknown error occurred.");
+        setError("An unknown error occurred while marking the report.");
       }
     } finally {
       setLoading(false);
     }
   };
-  
-
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Report Viewing & Marking</h1>
@@ -111,7 +115,12 @@ export default function ReportMarkingPage() {
               <CardContent className="space-y-2">
                 <h2 className="text-lg font-semibold">{report.title}</h2>
                 <p className="text-sm text-gray-600">Submitted by {report.studentName}</p>
-                <a href={report.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                <a
+                  href={report.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline"
+                >
                   View Report
                 </a>
                 <Button className="mt-2" onClick={() => setSelectedReport(report)}>
@@ -139,8 +148,10 @@ export default function ReportMarkingPage() {
             <Input
               type="number"
               placeholder="Enter mark"
-              value={mark}
-              onChange={(e) => setMark(e.target.value ? Number(e.target.value) : undefined)}
+              value={mark ?? ""}
+              onChange={(e) =>
+                setMark(e.target.value ? Number(e.target.value) : undefined)
+              }
             />
             <Textarea
               placeholder="Enter feedback"

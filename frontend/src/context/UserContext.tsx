@@ -1,17 +1,18 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+// context/UserContext.tsx
+import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
 import { getProfile, logoutUser } from "../api/auth";
 
 interface User {
   systemID: string;
-  userId: string;
+  id: string;
   email: string;
   userName: string;
-  role?: string; // include role if you're using it for redirection
+  role?: string;
 }
 
 interface UserContextType {
   user: User | null;
-  setUser: (user: User | null) => void; // ✅ Add setUser to the context
+  setUser: (user: User | null) => void;
   logout: () => void;
 }
 
@@ -45,8 +46,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
+  const value = useMemo(() => ({ user, setUser, logout }), [user]);
+
   return (
-    <UserContext.Provider value={{ user, setUser, logout }}>
+    <UserContext.Provider value={value}>
       {children}
     </UserContext.Provider>
   );

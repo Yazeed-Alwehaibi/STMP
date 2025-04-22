@@ -1,16 +1,19 @@
 import { Router } from 'express';
 import { applyOwn } from '../controllers/student/application';
-import * as reportController from "../controllers/student/report";
-import * as presentationController from "../controllers/student/presentation";
+import { submitReport } from '../controllers/student/report';
+import  {submitPresentation} from "../controllers/student/presentation";
+import { matchVenues } from '../controllers/student/suggestion';
 
 
 const router = Router();
 
 router.post('/applyOwn', applyOwn);
 
-router.post("/report/submit", reportController.submitReport);
+router.post("/report/submit", submitReport);
 
-router.post("/presentation/submit", presentationController.submitPresentation);
+router.post("/presentation/submit", submitPresentation);
+
+router.post("/match-venues", matchVenues);
 
 
 export default router;

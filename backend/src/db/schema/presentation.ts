@@ -1,11 +1,5 @@
-import { pgTable, serial, integer, timestamp, numeric, varchar, customType } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, timestamp, numeric, varchar } from "drizzle-orm/pg-core";
 
-// Define a custom BYTEA type correctly
-const bytea = customType<{ data: Buffer; driverData: Buffer }>({
-  dataType() {
-    return "bytea"; // PostgreSQL BYTEA type
-  },
-});
 
 export const presentation = pgTable("presentation", {
   presentationID: serial("presentation_id").primaryKey(),
@@ -15,6 +9,6 @@ export const presentation = pgTable("presentation", {
   presentationDate: timestamp("presentation_date"),
   mark: numeric("mark", { precision: 4, scale: 2 }),
   status: varchar("status", { length: 250 }),
-  file: bytea("file"),
+  fileUrl: varchar("fileUrl", { length: 250 }),
   createdAt: timestamp("created_at").defaultNow(),
 });

@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth";
 import studentRoutes from './routes/studentRoutes'
 import supervisor from './routes/supervisor'
+import uploadRoutes from './routes/upload'
 
 dotenv.config();
 const app: Application = express();
@@ -23,7 +24,7 @@ app.use(express.json());
 app.use(bodyParser.json()); // Parses incoming JSON data
 app.use(cookieParser()); // ✅ Required for handling cookies
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 
 // Routes
@@ -31,6 +32,8 @@ app.use('/api', userRoutes);
 app.use("/api", authRoutes);
 app.use("/api",studentRoutes);
 app.use("/api",supervisor);
+app.use("/api", uploadRoutes);
+
 
 
 app.get('/', (req: Request, res: Response) => {

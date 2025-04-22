@@ -3,12 +3,12 @@ import { pgTable, serial, integer, timestamp, numeric, text, varchar, pgEnum, cu
 // Define ENUM type correctly
 export const reportTypeEnum = pgEnum("report_type", ["1", "2", "3", "final"]);
 
-// Define a custom type for BYTEA (binary data)
-const bytea = customType<{ data: Buffer; driverData: Buffer }>({
-  dataType() {
-    return "bytea"; // PostgreSQL BYTEA type
-  },
-});
+// // Define a custom type for BYTEA (binary data)
+// const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+//   dataType() {
+//     return "bytea"; // PostgreSQL BYTEA type
+//   },
+// });
 
 export const reports = pgTable("Reports", {
   reportID: serial("reportID").primaryKey(),
@@ -21,5 +21,5 @@ export const reports = pgTable("Reports", {
   type: reportTypeEnum("type").notNull(),
   status: varchar("status", { length: 250 }),
   content: text("content"),
-  file: bytea("file"), 
+  fileUrl: varchar("fileUrl", { length: 250 }), 
 });

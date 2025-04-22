@@ -1,48 +1,67 @@
-import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import { useUser } from "../../context/UserContext"; // Assuming UserContext is in this path
 
-interface PresentationFormData {
+type PresentationFormData = {
   applicationID: string;
   file: FileList;
-}
+};
 
-export default function PresentationSubmission({ systemID }: { systemID: string }) {
-  
+export default function PresentationSubmission() {
+  const { user } = useUser(); // Access user context to get systemID
+  const systemID = user?.systemID; // Get systemID from user context
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<PresentationFormData>();
-  
+
   const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = async (data: PresentationFormData) => {
     if (!data.file || data.file.length === 0) {
-      toast.error("Please attach a powerpoint file.");
+      toast.error("Please attach a PowerPoint file.");
       return;
     }
-    
+
     setSubmitting(true);
-    const formData = new FormData();
-    formData.append("systemID", systemID);  
-    formData.append("reportFile", data.file[0]);
 
     try {
-      console.log("Submitting report:", data);
-      const response = await fetch("http://localhost:3000/api/presentation/submit", {
+      // Step 1: Upload the PowerPoint file
+      const uploadForm = new FormData();
+      uploadForm.append("file", data.file[0]);
+
+      const uploadRes = await fetch("http://localhost:3000/api/upload", {
         method: "POST",
-        body: formData,
+        body: uploadForm,
       });
-  
-      if (response.ok) {
-        alert("presentation submitted successfully.");
-        toast.success("presentation submitted successfully.");
+
+      if (!uploadRes.ok) {
+        toast.error("File upload failed.");
+        return;
+      }
+
+      const { fileUrl } = await uploadRes.json();
+
+      // Step 2: Submit presentation data with file URL and systemID from UserContext
+      const formData = new FormData();
+      formData.append("systemID", systemID ?? "");
+      formData.append("presentationFile", fileUrl); // Use the uploaded file URL
+
+      const presentationRes = await fetch("http://localhost:3000/api/presentation/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemID: systemID, // Pass systemID from UserContext
+          fileUrl: fileUrl,
+        }),
+      }); 
+
+      if (presentationRes.ok) {
+        alert("Presentation submitted successfully.");
+        toast.success("Presentation submitted successfully.");
         reset();
       } else {
         toast.error("Failed to submit presentation.");
@@ -53,30 +72,34 @@ export default function PresentationSubmission({ systemID }: { systemID: string 
       setSubmitting(false);
     }
   };
-  
 
   return (
-    <form 
+    <form
       onSubmit={handleSubmit(onSubmit)}
       className="max-w-3xl mx-auto mt-10 p-8 shadow-lg bg-white rounded-lg"
     >
-      <Card>
-        <CardContent className="space-y-6">
-          <div>
-            <Label className="text-lg">Attachment (powerpoint file only)</Label>
-            <Input 
-              type="file" 
-              accept="application/pptx" 
-              {...register("file", { required: "Attachment is required" })} 
-              className="w-full p-3 text-lg"
-            />
-            {errors.file && <p className="text-red-500 text-sm">{errors.file.message}</p>}
-          </div>
-          <Button type="submit" className="w-full py-3 text-lg" disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit Report"}
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <div>
+          <label className="block text-lg">Attach PowerPoint File (PPTX only):</label>
+          <input
+            type="file"
+            accept="application/pptx"
+            {...register("file", { required: "File is required" })}
+            className="block w-full p-3 text-lg border rounded"
+          />
+          {errors.file && <p className="text-red-500 text-sm">{errors.file.message}</p>}
+        </div>
+
+        <div className="mt-4">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full py-3 text-lg bg-blue-600 text-white rounded disabled:opacity-50"
+          >
+            {submitting ? "Submitting..." : "Submit Presentation"}
+          </button>
+        </div>
+      </div>
     </form>
   );
 }

@@ -16,21 +16,23 @@ export const getReportsBySupervisor = async (req: Request, res: Response): Promi
     }
 
     const supervisorReports = await db
-      .select({
-        id: reports.reportID,
-        studentName: usersTable.UserName, // adjust if name is different
-        supervisorID: reports.supervisorID,
-        mark: reports.mark,
-        feedback: reports.feedback,
-      })
-      .from(reports)
-      .innerJoin(usersTable, eq(reports.studentID, usersTable.SystemID)) // updated to use usersTable
-      .where(
-        and(
-          eq(reports.supervisorID, Number(supervisorID)),
-          isNull(reports.mark) // only unmarked reports
-        )
-      );
+  .select({
+    id: reports.reportID,
+    studentName: usersTable.UserName,
+    supervisorID: reports.supervisorID,
+    mark: reports.mark,
+    feedback: reports.feedback,
+    fileUrl: reports.fileUrl, // <-- add this line
+  })
+  .from(reports)
+  .innerJoin(usersTable, eq(reports.studentID, usersTable.SystemID))
+  .where(
+    and(
+      eq(reports.supervisorID, Number(supervisorID)),
+      isNull(reports.mark)
+    )
+  );
+
     // Convert report ID to string if needed
     const formatted = supervisorReports.map((r) => ({
       ...r,

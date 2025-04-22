@@ -1,4 +1,3 @@
-import Button from '../../components/buttons/button';
 import RoutingMethods from '../routing/RoutingMethods';
 import QU_logo from '../../components/images/QU-logo.png'
 import v2030 from '../../components/images/vision2030.png'
@@ -7,6 +6,8 @@ import venues from '../../components/images/venues.png'
 import reports from '../../components/images/reports.png'
 import presentation from '../../components/images/presentation.png'
 import community from '../../components/images/community.png'
+import { useUser } from "../../context/UserContext";
+
 
 
 
@@ -14,6 +15,10 @@ import community from '../../components/images/community.png'
 
 const HomePage = () => {
     const { studentApplication, studentReport, studentPresentation, indexPage } = RoutingMethods();
+      const { user } = useUser();
+      console.log('User in HomePage:', user?.id);
+
+    
     return (
         <div className="grid grid-cols-12 grid-rows-12 h-screen w-screen">
             {/* Header */}
@@ -80,11 +85,11 @@ const HomePage = () => {
                 <div className="col-span-46 row-span-4 bg-[#e7e7f3] p-2 rounded-2xl">
                     <div className="grid grid-cols-5 grid-rows-3 gap-1 ">
                         <p className='col-1 row-1 font-bold'>Student Name</p>
-                        <p className='col-2 row-1'>: Ibrahim Almania</p>
+                        <p className='col-2 row-1'>: {user?.userName}</p>
                         <p className='col-1 row-2 font-bold'>Student ID</p>
-                        <p className='col-2 row-2'>: 411107862</p>
+                        <p className='col-2 row-2'>:{user?.id}</p>
                         <p className='col-1 row-3 font-bold'>E-mail</p>
-                        <p className='col-2 row-3 col-span-2'>: ibrahimalmania@gmail.com</p>
+                        <p className='col-2 row-3'>: {user?.email}</p>
                         <p className='col-4 row-1 font-bold'>Department</p>
                         <p className='col-5 row-1'>: Computer Scince</p>
                         <p className='col-4 row-2 font-bold'>Traning Status</p>

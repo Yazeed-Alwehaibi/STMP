@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { db } from "../../db";
 import { presentation } from "../../db/schema/presentation";
-import { eq } from "drizzle-orm";
+import { usersTable } from "../../db/schema/users";
+import { eq, and, isNull } from "drizzle-orm";
 
-// Get all presentations for a supervisor
-export const getPresentationsBySupervisor =  async (req: Request, res: Response): Promise<void> => {
-    try {
+// GET /api/presentations?supervisorID=123
+export const getPresentationsBySupervisor = async (req: Request, res: Response): Promise<void> => {
+  try {
     const { supervisorID } = req.query;
 
     if (!supervisorID) {
@@ -14,19 +15,59 @@ export const getPresentationsBySupervisor =  async (req: Request, res: Response)
     }
 
     const results = await db
-      .select()
+      .select({
+        id: presentation.presentationID,
+        studentName: usersTable.UserName,
+        fileUrl: presentation.fileUrl,
+        presentationDate: presentation.presentationDate,
+        mark: presentation.mark,
+      })
       .from(presentation)
-      .where(eq(presentation.supervisorID, Number(supervisorID)));
+      .innerJoin(usersTable, eq(presentation.studentID, usersTable.SystemID))
+      .where(
+        and(
+          eq(presentation.supervisorID, Number(supervisorID)),
+          isNull(presentation.mark)
+        )
+      );
 
-    res.json(results);
-  } catch (err) {
-    console.error(err);
+    const formatted = results.map((p) => ({
+      ...p,
+      id: String(p.id),
+    }));
+
+    res.status(200).json(formatted);
+  } catch (error) {
+    console.error("Error fetching presentations:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// Set presentation date
-export const setPresentationDate =  async (req: Request, res: Response): Promise<void> => {
+// POST /api/presentations/:presentationID/mark
+export const markPresentation = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { presentationID } = req.params;
+    const { mark, feedback } = req.body;
+
+    if (!presentationID || mark === undefined || feedback === undefined) {
+      res.status(400).json({ error: "PresentationID, mark, and feedback are required" });
+      return;
+    }
+
+    await db
+      .update(presentation)
+      .set({ mark }) // set date here in future
+      .where(eq(presentation.presentationID, Number(presentationID)));
+
+    res.status(200).json({ message: "Presentation marked successfully" });
+  } catch (error) {
+    console.error("Error marking presentation:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// POST /api/presentations/:presentationID/set-date
+export const setPresentationDate = async (req: Request, res: Response): Promise<void> => {
   try {
     const { presentationID } = req.params;
     const { date } = req.body;
@@ -41,9 +82,9 @@ export const setPresentationDate =  async (req: Request, res: Response): Promise
       .set({ presentationDate: date })
       .where(eq(presentation.presentationID, Number(presentationID)));
 
-    res.json({ message: "Date set successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error updating date" });
+    res.status(200).json({ message: "Presentation date set successfully" });
+  } catch (error) {
+    console.error("Error setting presentation date:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

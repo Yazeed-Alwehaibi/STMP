@@ -71,6 +71,27 @@
       "when": 1742925741544,
       "tag": "0009_colossal_albert_cleary",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1745116937493,
+      "tag": "0010_modern_william_stryker",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1745305055760,
+      "tag": "0011_tan_wolf_cub",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1745319726581,
+      "tag": "0012_typical_hawkeye",
+      "breakpoints": true
     }
   ]
 }

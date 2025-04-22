@@ -1,0 +1,1 @@
+ALTER TABLE "Reports" RENAME COLUMN "file" TO "fileUrl";

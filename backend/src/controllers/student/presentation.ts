@@ -16,7 +16,7 @@ const upload = multer({
     }
     cb(null, true);
   },
-}).single("reportFile");
+}).single("presentationFile");
 
 export const getApplicationIDBySystemID = async (systemID: string): Promise<number | null> => {
   try {
@@ -37,54 +37,45 @@ export const getApplicationIDBySystemID = async (systemID: string): Promise<numb
 };
 
 export const submitPresentation = async (req: Request, res: Response): Promise<void> => {
-  upload(req, res, async (err) => {
-    if (err) {
-      return res.status(400).json({ error: err.message });
+  try {
+    console.log("Received Data:", req.body);  // Log incoming data
+    const { systemID, fileUrl } = req.body;
+
+    if (!systemID ||  !fileUrl) {
+      res.status(400).json({ error: "All required fields must be provided" });
+      return;
     }
 
-    const { systemID} = req.body;
-    if (!systemID ||  !req.file) {
-      return res.status(400).json({ error: "All fields are required" });
+    const applicationID = await getApplicationIDBySystemID(systemID);
+    if (!applicationID) {
+      res.status(404).json({ error: "Application not found or not accepted" });
+      return;
     }
 
-    try {
-      // Fetch applicationID using systemID
-      const applicationID = await getApplicationIDBySystemID(systemID);
-      if (!applicationID) {
-        return res.status(404).json({ error: "Application not found or not accepted" });
-      }
+    const application = await db
+      .select()
+      .from(applications)
+      .where(eq(applications.ApplicationID, applicationID))
+      .limit(1);
 
-      // Fetch application details to get studentID and supervisorID
-      const application = await db
-        .select()
-        .from(applications)
-        .where(eq(applications.ApplicationID, applicationID))
-        .limit(1);
+    const studentID = application[0].studentID;
+    const supervisorID = application[0].supervisorID;
 
-      const studentID: number = application[0].studentID ?? 0;
-      const supervisorID: number = application[0].supervisorID ?? 0;
-      
-      // Get the file buffer directly from memory (as we used memoryStorage in multer)
-      const fileBuffer = req.file?.buffer;
+    const newPresentation = await db
+      .insert(presentation)
+      .values({
+        studentID,
+        supervisorID,
+        applicationID,
+        fileUrl: fileUrl,
+      } as typeof presentation.$inferInsert)
+      .returning();
 
-      // Insert report into database, storing the file buffer directly
-      const newPresentation = await db
-        .insert(presentation)
-        .values({
-          studentID: studentID,
-          supervisorID: supervisorID,
-          applicationID: applicationID,
-          file: fileBuffer,  
-        })
-        .returning();
+    console.log("Presentation stored in the database:", newPresentation[0]);
 
-        console.log("Presentation stored in the database:", newPresentation[0]);
-
-
-      res.status(201).json({ message: "Report submitted successfully", report: newPresentation[0] });
-    } catch (error) {
-      console.error("Database error:", error);
-      res.status(500).json({ error: "Database error" });
-    }
-  });
+    res.status(201).json({ message: "Presentation submitted successfully", report: newPresentation[0] });
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error" });
+  }
 };
