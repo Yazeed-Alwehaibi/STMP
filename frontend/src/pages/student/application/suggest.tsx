@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useUser } from "../../../context/UserContext";
 
 const departments = [
   { id: 1, name: "Computer Science" },
@@ -13,17 +14,23 @@ const departments = [
   { id: 9, name: "Data Science" },
 ];
 
-export default function Suggestions() {
-  const [selectedPrefs, setSelectedPrefs] = useState<number[]>([]);
-  interface Venue {
-    venueID: number;
-    venueName: string;
-    location: string;
-    rating: number;
-    website: string;
-  }
+interface Venue {
+  venueID: number;
+  venueName: string;
+  location: string;
+  rating: number;
+  website: string;
+}
 
+
+
+export default function Suggestions() {
+  const { user } = useUser();
+  const [selectedPrefs, setSelectedPrefs] = useState<number[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
+  const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
 
   const handleCheckboxChange = (id: number) => {
     setSelectedPrefs((prev) =>
@@ -33,7 +40,7 @@ export default function Suggestions() {
 
   const handleSubmit = async () => {
     try {
-        const res = await axios.post("http://localhost:3000/api/match-venues", {
+      const res = await axios.post("http://localhost:3000/api/match-venues", {
         preferences: selectedPrefs,
       });
       setVenues(res.data);
@@ -42,8 +49,34 @@ export default function Suggestions() {
     }
   };
 
+  const openDialog = (venue: Venue) => {
+    setSelectedVenue(venue);
+    setIsDialogOpen(true);
+  };
+
+  const closeDialog = () => {
+    setIsDialogOpen(false);
+    setSelectedVenue(null);
+  };
+
+  const handleApply = async () => {
+    if (!selectedVenue) return;
+  
+    try {
+      await axios.post("http://localhost:3000/api/apply-suggest", {
+        systemID: user?.systemID,
+        venueID: selectedVenue.venueID,
+      });
+      alert(`Application submitted to ${selectedVenue.venueName}`);
+      closeDialog();
+    } catch (error) {
+      console.error("Failed to apply:", error);
+      alert("There was an error submitting your application. Please try again.");
+    }
+  };
+
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">Select Your Training Preferences</h1>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
@@ -67,25 +100,59 @@ export default function Suggestions() {
         Find Matching Venues
       </button>
 
-      <div className="mt-8">
+      <div className="mt-10">
         <h2 className="text-xl font-semibold mb-4">Matching Venues</h2>
         {venues.length === 0 ? (
           <p>No venues found.</p>
         ) : (
-          <ul className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {venues.map((venue) => (
-              <li key={venue.venueID} className="border p-4 rounded shadow">
-                <h3 className="text-lg font-semibold">{venue.venueName}</h3>
+              <div key={venue.venueID} className="border rounded-xl shadow p-4 bg-white">
+                <h3 className="text-lg font-bold">{venue.venueName}</h3>
                 <p>Location: {venue.location}</p>
                 <p>Rating: {venue.rating}</p>
                 <a href={venue.website} className="text-blue-600 underline" target="_blank" rel="noreferrer">
                   Visit Website
                 </a>
-              </li>
+                <button
+                  onClick={() => openDialog(venue)}
+                  className="mt-3 block w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+                >
+                  View Details
+                </button>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
+
+      {isDialogOpen && selectedVenue && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-xl relative">
+            <button
+              onClick={closeDialog}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+            >
+              ✕
+            </button>
+            <h3 className="text-xl font-bold mb-2">{selectedVenue.venueName}</h3>
+            <p><strong>Location:</strong> {selectedVenue.location}</p>
+            <p><strong>Rating:</strong> {selectedVenue.rating}</p>
+            <p>
+              <strong>Website:</strong>{" "}
+              <a href={selectedVenue.website} className="text-blue-600 underline" target="_blank" rel="noreferrer">
+                {selectedVenue.website}
+              </a>
+            </p>
+            <button
+              onClick={handleApply}
+              className="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

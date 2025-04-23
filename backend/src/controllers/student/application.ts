@@ -34,6 +34,7 @@ export const applyOwn = async (req: Request, res: Response): Promise<void> => {
     const insertedApplication = await db.insert(applications).values({
       studentID : parseInt(systemID),
       venueID,
+      status: "pending",
     }).returning();
 
     res.status(201).json({
