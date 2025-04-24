@@ -56,7 +56,7 @@ export const markPresentation = async (req: Request, res: Response): Promise<voi
 
     await db
       .update(presentation)
-      .set({ mark }) // set date here in future
+      .set({ mark }) // Add feedback here if needed: .set({ mark, feedback })
       .where(eq(presentation.presentationID, Number(presentationID)));
 
     res.status(200).json({ message: "Presentation marked successfully" });
@@ -77,9 +77,19 @@ export const setPresentationDate = async (req: Request, res: Response): Promise<
       return;
     }
 
+    // Convert string date to Date object
+    const presentationDate = new Date(date);
+
+    // Optional validation: Ensure future date
+    const now = new Date();
+    if (presentationDate < now) {
+      res.status(400).json({ error: "Date cannot be in the past" });
+      return;
+    }
+
     await db
       .update(presentation)
-      .set({ presentationDate: date })
+      .set({ presentationDate })
       .where(eq(presentation.presentationID, Number(presentationID)));
 
     res.status(200).json({ message: "Presentation date set successfully" });
