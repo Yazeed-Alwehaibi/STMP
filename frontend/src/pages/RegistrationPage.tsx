@@ -6,10 +6,15 @@ import axios from "axios";
 import { Control } from "react-hook-form";
 import { UseFormRegister, FieldErrors } from "react-hook-form";
 
-
-
 // Role options for the user
 const roles = ["Supervisor", "Student", "Training Representative"];
+
+// Department options
+const departments = [
+  "Computer Science",
+  "Information Technology",
+  "Computer Engineering"
+];
 
 // Define Form Data Structure
 type FormData = {
@@ -23,9 +28,6 @@ type FormData = {
   GPA?: number;
   extrainfo: string;
 };
-
-
-
 
 function RoleSelector({ control }: { control: Control<FormData> }) {
   return (
@@ -48,7 +50,6 @@ function RoleSelector({ control }: { control: Control<FormData> }) {
 }
 
 // User Information Fields
-
 function UserInfoFields({ register, errors }: { register: UseFormRegister<FormData>; errors: FieldErrors<FormData> }) {
   return (
     <>
@@ -89,7 +90,15 @@ function ConditionalFields({ register, errors, role }: { register: UseFormRegist
     <>
       {(role === "Student" || role === "Supervisor") && (
         <>
-          <Input {...register("department", { required: "Department is required" })} placeholder="Department" />
+          <select 
+            {...register("department", { required: "Department is required" })} 
+            className="w-full p-2 border rounded"
+          >
+            <option value="">Select Department</option>
+            {departments.map((dep) => (
+              <option key={dep} value={dep}>{dep}</option>
+            ))}
+          </select>
           {errors.department && <p className="text-red-500 text-sm">{errors.department.message}</p>}
         </>
       )}
@@ -122,7 +131,7 @@ export default function RoleBasedForm() {
 
   const onSubmit = async (data: FormData) => {
     console.log("Submitting form:", data);
-    
+
     const formattedData = {
       userID: data.userID,
       name: `${data.firstName} ${data.lastName}`.trim(), // Combine firstName + lastName
@@ -131,7 +140,7 @@ export default function RoleBasedForm() {
       department: data.department || undefined,
       extrainfo: data.studiedHours && data.GPA ? `${data.studiedHours} hours, GPA: ${data.GPA}` : undefined, // Format extraInfo
     };
-  
+
     try {
       const response = await axios.post("http://localhost:3000/api/register/", formattedData);
       console.log("Success:", response.data);

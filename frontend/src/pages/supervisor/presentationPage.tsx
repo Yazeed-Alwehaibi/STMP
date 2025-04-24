@@ -18,7 +18,7 @@ export default function PresentationPage() {
   const { user } = useUser();
   const [presentations, setPresentations] = useState<Presentation[]>([]);
   const [selectedPresentation, setSelectedPresentation] = useState<Presentation | null>(null);
-  const [date, setDate] = useState<string>("");
+  const [date, setDate] = useState<string>(""); // Store the date as a string
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const supervisorID = user?.systemID;
@@ -40,7 +40,7 @@ export default function PresentationPage() {
     if (!selectedPresentation || !date) return;
     setLoading(true);
     try {
-      await fetch(`/api/presentations/${selectedPresentation.id}/set-date`, {
+      await fetch(`http://localhost:3000/api/presentations/${selectedPresentation.id}/set-date`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date }),
@@ -54,9 +54,9 @@ export default function PresentationPage() {
       setSelectedPresentation(null);
       setError(null);
     } catch (err) {
-        console.error(err);
-      }
-      finally {
+      console.error(err);
+      setError("Failed to set presentation date.");
+    } finally {
       setLoading(false);
     }
   };
@@ -100,6 +100,7 @@ export default function PresentationPage() {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              className="w-full p-2 border rounded-md border-black"
             />
             <Button className="mt-4" onClick={handleSetDate} disabled={loading}>
               Save Date

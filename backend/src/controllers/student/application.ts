@@ -5,23 +5,25 @@ import { venues } from "../../db/schema/venues";
 import { eq } from "drizzle-orm";
 
 export const applyOwn = async (req: Request, res: Response): Promise<void> => {
-  const { venueName, venueDescription, website, systemID } = req.body;
+  const { venueName, website, systemID, startDate, endDate } = req.body;
 
-  if (!venueName || !website || !systemID) {
+  if (!venueName || !website || !systemID || !startDate || !endDate) {
     res.status(400).json({ error: "All fields are required" });
     return;
   }
 
-  try {
-    // Check if venue exists
-    let venue = await db.select().from(venues).where(eq(venues.venueName, venueName)).limit(1);
+  if (new Date(startDate) >= new Date(endDate)) {
+    res.status(400).json({ error: "End date must be after start date" });
+    return;
+  }
 
+  try {
+    let venue = await db.select().from(venues).where(eq(venues.venueName, venueName)).limit(1);
     let venueID: number;
 
     if (venue.length > 0) {
       venueID = venue[0].venueID;
     } else {
-      // Insert new venue
       const insertedVenue = await db.insert(venues).values({
         venueName,
         website,
@@ -30,11 +32,12 @@ export const applyOwn = async (req: Request, res: Response): Promise<void> => {
       venueID = insertedVenue[0].venueID;
     }
 
-    // Insert user and venue into applications
     const insertedApplication = await db.insert(applications).values({
-      studentID : parseInt(systemID),
+      studentID: parseInt(systemID),
       venueID,
       status: "pending",
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
     }).returning();
 
     res.status(201).json({

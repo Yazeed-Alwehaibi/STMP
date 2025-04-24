@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth";
 import studentRoutes from './routes/studentRoutes'
 import supervisor from './routes/supervisor'
 import uploadRoutes from './routes/upload'
+import rep from './routes/rep'
 
 dotenv.config();
 const app: Application = express();
@@ -33,6 +34,8 @@ app.use("/api", authRoutes);
 app.use("/api",studentRoutes);
 app.use("/api",supervisor);
 app.use("/api", uploadRoutes);
+app.use("/api", rep);
+
 
 
 
