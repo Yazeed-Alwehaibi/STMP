@@ -25,7 +25,4 @@ router.get("/fetchOffers", getActiveOffers);
 router.post("/applyToOffer", applyToOffer);
 
 
-
-
-
 export default router;
