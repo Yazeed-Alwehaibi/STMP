@@ -2,15 +2,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { useUser } from "../../context/UserContext";
-import axios from "axios";
-import type { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
+import StudentLayout from "../../components/layouts/student_layout";
 
-
-type ReportFormData = {
+interface ReportFormData {
   type: string;
   content?: string;
   file: FileList;
-};
+}
 
 export default function ReportSubmission() {
   const { user } = useUser();
@@ -37,65 +36,84 @@ export default function ReportSubmission() {
     setSubmitting(true);
 
     try {
-      // Step 1: Upload file
-      const uploadForm = new FormData();
-      uploadForm.append("file", data.file[0]);
+      const formData = new FormData();
+      formData.append("file", data.file[0]);
 
-      const uploadRes = await axios.post("http://localhost:3000/api/upload", uploadForm);
-      const { fileUrl } = uploadRes.data;
+      const uploadResponse = await axios.post("http://localhost:3000/api/upload", formData);
+      const { fileUrl } = uploadResponse.data;
 
-      // Step 2: Submit report (no systemID included)
-      await axios.post("http://localhost:3000/api/report/submit", {
-        reportType: data.type,
-        reportContent: data.content ?? "",
-        fileUrl,
-      }, {
-        withCredentials: true, // This ensures that cookies are sent with the request
-      });
+      await axios.post(
+        "http://localhost:3000/api/report/submit",
+        {
+          reportType: data.type,
+          reportContent: data.content ?? "",
+          fileUrl,
+        },
+        { withCredentials: true }
+      );
 
       toast.success("Report submitted successfully.");
       reset();
-    } catch (error: unknown) {
+    } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       console.error(err);
       toast.error(err.response?.data?.error || "An error occurred while submitting.");
-    }finally {
+    } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <label>Report Type:</label>
-        <select {...register("type", { required: true })} className="block w-full border p-2">
-          <option value="">Select</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="final">Final</option>
-        </select>
-        {errors.type && <span className="text-red-500 text-sm">Report type is required</span>}
-      </div>
+    <StudentLayout>
+      <div className="bg-[#e7e7f3] p-4 rounded-2xl mb-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <label>Report Type:</label>
+            <select
+              {...register("type", { required: true })}
+              className="bg-white shadow-lg block w-full border p-2"
+            >
+              <option value="">Select</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="final">Final</option>
+            </select>
+            {errors.type && (
+              <span className="text-red-500 text-sm">Report type is required</span>
+            )}
+          </div>
 
-      <div>
-        <label>Content (optional):</label>
-        <textarea {...register("content")} className="block w-full border p-2" />
-      </div>
+          <div>
+            <label>Content (optional):</label>
+            <textarea
+              {...register("content")}
+              className="block w-full border p-2 bg-white shadow-lg"
+            />
+          </div>
 
-      <div>
-        <label>Attach File:</label>
-        <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" {...register("file", { required: true })} />
-        {errors.file && <span className="text-red-500 text-sm">File is required</span>}
-      </div>
+          <div>
+            <label>Attach File:</label>
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,.ppt,.pptx"
+              {...register("file", { required: true })}
+              className="bg-white p-2 shadow-lg"
+            />
+            {errors.file && (
+              <span className="text-red-500 text-sm">File is required</span>
+            )}
+          </div>
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-      >
-        {submitting ? "Submitting..." : "Submit Report"}
-      </button>
-    </form>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="bg-[rgb(81,181,214)] shadow-lg text-white px-4 py-2 rounded disabled:opacity-50"
+          >
+            {submitting ? "Submitting..." : "Submit Report"}
+          </button>
+        </form>
+      </div>
+    </StudentLayout>
   );
 }

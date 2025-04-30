@@ -154,12 +154,14 @@ export default function RoleBasedForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg mx-auto p-4 space-y-4 border rounded-lg shadow bg-white">
-      <h2 className="text-xl font-semibold">User Registration</h2>
-      <RoleSelector control={control} />
-      <UserInfoFields register={register} errors={errors} />
-      <ConditionalFields register={register} errors={errors} role={role} />
-      <Button type="submit" className="w-full">Submit</Button>
-    </form>
+    <div className="w-screen h-screen bg-[rgb(81,181,214)]">
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg mx-auto p-4 space-y-4 border rounded-lg shadow bg-white">
+        <h2 className="text-xl font-semibold">User Registration</h2>
+        <RoleSelector control={control} />
+        <UserInfoFields register={register} errors={errors} />
+        <ConditionalFields register={register} errors={errors} role={role} />
+        <Button type="submit" className="w-full">Submit</Button>
+      </form>
+    </div>
   );
 }
