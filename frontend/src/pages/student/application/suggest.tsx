@@ -76,10 +76,9 @@ export default function Suggestions() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Select Your Training Preferences</h1>
-
-      <div className="grid grid-cols-2 gap-3 mb-6">
+    <div className="grid grid-cols-2 row-7 gap-3">
+      <div className="grid grid-cols-2 col-1 row-span-7 gap-1 mb-6">
+      <h1 className=" col-span-2 row-1 text-2xl font-bold mb-4">Select Your Training Preferences</h1>
         {departments.map((dept) => (
           <label key={dept.id} className="flex items-center gap-2">
             <input
@@ -91,21 +90,22 @@ export default function Suggestions() {
             {dept.name}
           </label>
         ))}
-      </div>
-
-      <button
+        <button
         onClick={handleSubmit}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        className=" row-7 col-span-2 bg-[rgb(81,181,214)] text-white px-4 py-2 rounded hover:bg-blue-700 transition"
       >
         Find Matching Venues
       </button>
+      </div>
 
-      <div className="mt-10">
-        <h2 className="text-xl font-semibold mb-4">Matching Venues</h2>
+      
+
+      <div className="grid grid-col-1 grid-rows-6 col-2 row-span-7">
+        <h2 className="row-1 text-xl font-semibold mb-4">Matching Venues</h2>
         {venues.length === 0 ? (
-          <p>No venues found.</p>
+          <p className="row-span-5">No venues found.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 row-span-5">
             {venues.map((venue) => (
               <div key={venue.venueID} className="border rounded-xl shadow p-4 bg-white">
                 <h3 className="text-lg font-bold">{venue.venueName}</h3>
