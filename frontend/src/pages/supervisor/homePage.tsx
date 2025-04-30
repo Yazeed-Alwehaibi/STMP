@@ -1,21 +1,36 @@
-import Button from '../../components/buttons/button';
-import RoutingMethods from '../routing/RoutingMethods';
-
-
-
+import SupervisorLayout from '../../components/layouts/supervisor_layout';
+import { useUser } from '../../context/UserContext';
 
 
 const HomePage = () => {
-    const { supervisorApplication, supervisorReport, supervisorPresentation, indexPage } = RoutingMethods();
+    const { user } = useUser();
+
     return (
-        <div className="flex justify-center space-x-4">
-            <Button buttonName="applications" onClick={supervisorApplication} />
-            <Button buttonName="reports" onClick={supervisorReport} />
-            <Button buttonName="presentations" onClick={supervisorPresentation} />
-            <Button buttonName="community" />
-            <Button buttonName="logout" onClick={indexPage} />
-        </div>
-    
+        <SupervisorLayout>
+            <div className='row-span-12 col-span-12'>
+                <div className="bg-[#e7e7f3] p-4 rounded-2xl mb-4">
+                    <div className="grid grid-cols-5 grid-rows-3 gap-1">
+                        <p className='col-1 row-1 font-bold'>Student Name</p>
+                        <p className='col-2 row-1'>: {user?.userName}</p>
+                        <p className='col-1 row-2 font-bold'>Student ID</p>
+                        <p className='col-2 row-2'>: {user?.id}</p>
+                        <p className='col-1 row-3 font-bold'>E-mail</p>
+                        <p className='col-2 row-3'>: {user?.email}</p>
+                        <p className='col-4 row-1 font-bold'>Department</p>
+                        <p className='col-5 row-1'>: Computer Science</p>
+                    </div>
+                </div>
+
+                <div className="bg-[#e7e7f3] text-center p-5 rounded-2xl">
+                    <p>Welcome to the Summer Training Program.</p>
+                    <br />
+                    <p>We welcome you to the Program's online portal,</p>
+                    <p>Please keep your username and password secure to protect your information.</p>
+                    <br /><br />
+                    <p>We hope our services meet your expectations.</p>
+                </div>
+            </div>
+        </SupervisorLayout>    
     )
 }
 
