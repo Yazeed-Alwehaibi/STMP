@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { useUser } from "../../context/UserContext"; // Assuming UserContext is in this path
+import StudentLayout from '../../components/layouts/student_layout';
+
 
 type ReportFormData = {
   type: string;
@@ -78,37 +80,41 @@ export default function ReportSubmission() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <label>Report Type:</label>
-        <select {...register("type", { required: true })} className="block w-full border p-2">
-          <option value="">Select</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="final">Final</option>
-        </select>
-        {errors.type && <span className="text-red-500 text-sm">Report type is required</span>}
-      </div>
+    <StudentLayout>
+    <div className="bg-[#e7e7f3] p-4 rounded-2xl mb-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <label>Report Type:</label>
+          <select {...register("type", { required: true })} className="bg-white shadow-lg block w-full border p-2">
+            <option value="">Select</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="final">Final</option>
+          </select>
+          {errors.type && <span className="text-red-500 text-sm">Report type is required</span>}
+        </div>
 
-      <div>
-        <label>Content (optional):</label>
-        <textarea {...register("content")} className="block w-full border p-2" />
-      </div>
+        <div>
+          <label>Content (optional):</label>
+          <textarea {...register("content")} className="block w-full border p-2 bg-white shadow-lg" />
+        </div>
 
-      <div>
-        <label>Attach File:</label>
-        <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" {...register("file", { required: true })} />
-        {errors.file && <span className="text-red-500 text-sm">File is required</span>}
-      </div>
+        <div>
+          <label>Attach File:</label> <br />
+          <input className="bg-white p-2 shadow-lg" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" {...register("file", { required: true })} />
+          {errors.file && <span className="text-red-500 text-sm">File is required</span>}
+        </div>
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-      >
-        {submitting ? "Submitting..." : "Submit Report"}
-      </button>
-    </form>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="bg-[rgb(81,181,214)] shadow-lg text-white px-4 py-2 rounded disabled:opacity-50"
+        >
+          {submitting ? "Submitting..." : "Submit Report"}
+        </button>
+      </form>
+    </div>
+    </StudentLayout>
   );
 }

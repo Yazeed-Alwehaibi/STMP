@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { useUser } from "../../context/UserContext"; // Assuming UserContext is in this path
+import StudentLayout from '../../components/layouts/student_layout';
+
 
 type PresentationFormData = {
   applicationID: string;
@@ -74,32 +76,36 @@ export default function PresentationSubmission() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="max-w-3xl mx-auto mt-10 p-8 shadow-lg bg-white rounded-lg"
-    >
-      <div className="space-y-4">
-        <div>
-          <label className="block text-lg">Attach PowerPoint File (PPTX only):</label>
-          <input
-            type="file"
-            accept="application/pptx"
-            {...register("file", { required: "File is required" })}
-            className="block w-full p-3 text-lg border rounded"
-          />
-          {errors.file && <p className="text-red-500 text-sm">{errors.file.message}</p>}
-        </div>
+    <StudentLayout>
+    <div className="bg-[#e7e7f3] p-4 rounded-2xl mb-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="max-w-3xl mx-auto mt-10 p-8 "
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-lg">Attach PowerPoint File (PPTX only):</label>
+            <input
+              type="file"
+              accept="application/pptx"
+              {...register("file", { required: "File is required" })}
+              className="block w-full p-3 text-lg border rounded shadow-lg bg-white"
+            />
+            {errors.file && <p className="text-red-500 text-sm">{errors.file.message}</p>}
+          </div>
 
-        <div className="mt-4">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full py-3 text-lg bg-blue-600 text-white rounded disabled:opacity-50"
-          >
-            {submitting ? "Submitting..." : "Submit Presentation"}
-          </button>
+          <div className="mt-4">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-3 text-lg bg-[rgb(81,181,214)] shadow-lg text-white rounded disabled:opacity-50"
+            >
+              {submitting ? "Submitting..." : "Submit Presentation"}
+            </button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
+    </StudentLayout>
   );
 }
