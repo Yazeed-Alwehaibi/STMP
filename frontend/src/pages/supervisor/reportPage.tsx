@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,167 +11,136 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { useUser } from "../../context/UserContext";
 
-interface Report {
-  id: string;
-  studentName: string;
-  title: string;
+type Report = {
+  reportID: number;
+  mark: number | null;
+  feedback: string | null;
+  studentID: number;
+  trainingRepID: number | null;
+  supervisorID: number;
+  applicationID: number;
+  submissionDate: string;
+  type: string;
+  status: string;
+  content: string;
   fileUrl: string;
-  supervisorID: string;
-  mark?: number;
-  feedback?: string;
-}
+};
 
-export default function ReportMarkingPage() {
-  const { user } = useUser();
+const ReportMarkingPage = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
-  const [mark, setMark] = useState<number | undefined>(undefined);
-  const [feedback, setFeedback] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [mark, setMark] = useState<number | string>("");
+  const [feedback, setFeedback] = useState<string>("");
 
   useEffect(() => {
     const fetchReports = async () => {
-      if (!user?.systemID) {
-        console.warn("User systemID not available yet");
-        return;
-      }
-
-      setLoading(true);
       try {
-        const response = await axios.get("http://localhost:3000/api/reports", {
-          withCredentials: true,
-        });
+        const response = await axios.get("http://localhost:3000/api/reports", { withCredentials: true });
 
-        console.log("Fetched reports:", response.data);
-        setReports(response.data);
-        setError(null);
-      } catch (err) {
-        if (axios.isAxiosError(err)) {
-          setError(err.response?.data?.error || "Failed to fetch reports");
+        // Check if the response is as expected (an array of reports)
+        if (Array.isArray(response.data)) {
+          setReports(response.data);
         } else {
-          setError("An unknown error occurred.");
+          console.error("Unexpected response format:", response.data);
         }
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching reports:", error);
       }
     };
 
     fetchReports();
-  }, [user?.systemID]);
+  }, []);
 
-  const handleSubmit = async () => {
-    if (!selectedReport?.id) {
-      setError("No report selected.");
+  const handleMarkReport = async () => {
+    if (!selectedReport || !mark || !feedback) {
+      alert("Please provide both mark and feedback");
       return;
     }
-
-    if (mark === undefined || mark < 0 || mark > 100) {
-      setError("Please enter a valid mark between 0 and 100.");
+  
+    // Ensure mark is sent as a number
+    const numericMark = parseFloat(mark.toString());
+  
+    if (isNaN(numericMark)) {
+      alert("Invalid mark value");
       return;
     }
-
-    setLoading(true);
-
+  
+    const data = { mark: numericMark, feedback };
+  
     try {
-      const response = await fetch(`http://localhost:3000/api/reports/${selectedReport.id}/mark`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mark, feedback }),
-        credentials: "include",
-      });
-
-      if (!response.ok) throw new Error("Failed to submit mark.");
-
-      alert("Mark submitted successfully!");
-
-      setReports((prev) =>
-        prev.map((r) =>
-          r.id === selectedReport.id ? { ...r, mark, feedback } : r
-        )
+      console.log("Sending data to backend:", data); // Log the data being sent
+  
+      const response = await axios.post(
+        `http://localhost:3000/api/reports/${selectedReport.reportID}/mark`,
+        data,
+        { withCredentials: true }
       );
-
-      setSelectedReport(null);
-      setMark(undefined);
-      setFeedback("");
-      setError(null);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError("Error marking report: " + err.message);
-      } else {
-        setError("An unknown error occurred while marking the report.");
+  
+      if (response.status === 200) {
+        alert("Report marked successfully");
+        setSelectedReport(null); // Close dialog
       }
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error marking report:", error.response?.data || error.message);
+      } else {
+        console.error("Error marking report:", error);
+      }
+      alert("Failed to mark the report.");
     }
   };
-
+  
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Report Viewing & Marking</h1>
-
-      {loading ? (
-        <p>Loading reports...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : reports.length === 0 ? (
+      {reports.length === 0 ? (
         <p>No reports found.</p>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {reports.map((report) => (
-            <Card key={report.id} className="p-4">
-              <CardContent className="space-y-2">
-                <h2 className="text-lg font-semibold">{report.title}</h2>
-                <p className="text-sm text-gray-600">Submitted by {report.studentName}</p>
-                <a
-                  href={report.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 underline"
-                >
-                  View Report
-                </a>
-                <Button className="mt-2" onClick={() => setSelectedReport(report)}>
-                  Review & Mark
-                </Button>
+            <Card
+              key={report.reportID}
+              className="cursor-pointer"
+              onClick={() => setSelectedReport(report)}
+            >
+              <CardContent>
+                <h3 className="text-xl font-semibold">{report.reportID}</h3>
+                <p>{report.feedback ? report.feedback : "No feedback yet"}</p>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
 
-      <Dialog open={!!selectedReport} onOpenChange={() => setSelectedReport(null)}>
+      <Dialog open={!!selectedReport} onOpenChange={(open) => !open && setSelectedReport(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Mark Report</DialogTitle>
-            <DialogDescription>
-              Provide a mark and feedback for this report.
-            </DialogDescription>
+            <DialogDescription>Select the mark and provide feedback</DialogDescription>
           </DialogHeader>
-          <div className="space-y-3 mt-2">
-            <h2 className="font-semibold">{selectedReport?.title}</h2>
-            <p className="text-sm text-gray-600">By {selectedReport?.studentName}</p>
+          <div className="space-y-4">
             <Input
               type="number"
-              placeholder="Enter mark"
-              value={mark ?? ""}
-              onChange={(e) =>
-                setMark(e.target.value ? Number(e.target.value) : undefined)
-              }
+              placeholder="Mark"
+              value={mark}
+              onChange={(e) => setMark(e.target.value)}
+              className="w-full"
             />
             <Textarea
-              placeholder="Enter feedback"
+              placeholder="Feedback"
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
+              className="w-full"
             />
-            <Button onClick={handleSubmit} disabled={loading}>
-              Submit
-            </Button>
           </div>
+          <Button onClick={handleMarkReport} className="mt-4">
+            Submit Mark
+          </Button>
         </DialogContent>
       </Dialog>
     </div>
   );
-}
+};
+
+export default ReportMarkingPage;

@@ -7,6 +7,7 @@ import { AuthRequest } from "../../middleware/auth";
 import { z } from "zod";
 
 
+
 // GET /api/reports?supervisorID=123
 
 export const getReportsBySupervisor = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -45,7 +46,7 @@ export const getReportsBySupervisor = async (req: AuthRequest, res: Response): P
       ...r,
       reportID: String(r.reportID),
     }));
-    
+
     res.status(200).json(formatted);
   } catch (error) {
     console.error("Error fetching reports:", error);
@@ -54,8 +55,8 @@ export const getReportsBySupervisor = async (req: AuthRequest, res: Response): P
 };
 
 const markReportSchema = z.object({
-  mark: z.number().min(0).max(100),
-  feedback: z.string().max(1000),
+  mark: z.number().min(0).max(100),  // Ensure mark is a number within a valid range
+  feedback: z.string().min(1),       // Ensure feedback is a non-empty string
 });
 
 export const markReport = async (req: Request, res: Response): Promise<void> => {
@@ -68,15 +69,30 @@ export const markReport = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
+    // Ensure reportID is provided
+    if (!reportID) {
+      res.status(400).json({ error: "Report ID is required." });
+      return;
+    }
+
+    console.log("Marking report:", { reportID, body: req.body });
+
     const { mark, feedback } = parseResult.data;
 
-    console.log("Marking report:", { reportID, mark, feedback });
+    // Optional: You can also validate mark range explicitly if needed
+    if (mark < 0 || mark > 100) {
+      res.status(400).json({ error: "Mark must be between 0 and 100." });
+      return;
+    }
 
+    // Update the report in the database
     await db
-      .update(reports)
-      .set({ mark: String(mark), feedback })
-      .where(eq(reports.reportID, Number(reportID)));
-
+    .update(reports)
+    .set({
+      mark: String(mark),  // Convert the number to a string before setting it
+      feedback,
+    })
+    .where(eq(reports.reportID, Number(reportID)));
     // Confirm the report exists after update
     const updatedReport = await db
       .select()
@@ -90,7 +106,11 @@ export const markReport = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    res.status(200).json({ message: "Report marked successfully" });
+    // Respond with success and the updated report
+    res.status(200).json({
+      message: "Report marked successfully",
+      updatedReport,
+    });
   } catch (error) {
     console.error("Error marking report:", error);
     res.status(500).json({ error: "Internal server error" });
