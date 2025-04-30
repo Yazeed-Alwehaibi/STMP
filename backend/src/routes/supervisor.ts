@@ -16,12 +16,12 @@ router.post("/applications/accept", authenticateUser, acceptApplication);
 // Reject an application: Only accessible by authenticated users (supervisors)
 router.post("/applications/reject", authenticateUser, rejectApplication);
 
-router.get("/reports", getReportsBySupervisor); // for fetching reports by supervisorID
-router.post("/reports/:reportID/mark", markReport); // for marking a report
+router.get("/reports", authenticateUser, getReportsBySupervisor); // for fetching reports by supervisorID
+router.post("/reports/:reportID/mark", authenticateUser, markReport); // for marking a report
 
 
-router.get("/presentations", getPresentationsBySupervisor);
-router.post("/presentations/:presentationID/set-date", setPresentationDate);
+router.get("/presentations", authenticateUser, getPresentationsBySupervisor);
+router.post("/presentations/:presentationID/set-date", authenticateUser, setPresentationDate);
 
 
 export default router;

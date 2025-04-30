@@ -1,0 +1,4 @@
+ALTER TABLE "participants" ADD CONSTRAINT "participants_participantID_users_SystemID_fk" FOREIGN KEY ("participantID") REFERENCES "public"."users"("SystemID") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "presentation" ADD CONSTRAINT "presentation_student_id_users_SystemID_fk" FOREIGN KEY ("student_id") REFERENCES "public"."users"("SystemID") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "presentation" ADD CONSTRAINT "presentation_supervisor_id_users_SystemID_fk" FOREIGN KEY ("supervisor_id") REFERENCES "public"."users"("SystemID") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "presentation" ADD CONSTRAINT "presentation_application_id_application_ApplicationID_fk" FOREIGN KEY ("application_id") REFERENCES "public"."application"("ApplicationID") ON DELETE no action ON UPDATE no action;

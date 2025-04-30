@@ -34,15 +34,18 @@ const OwnVenueForm = () => {
     const submissionData = {
       venueName: data.name,
       website: data.website,
-      systemID: user.systemID,
       startDate: data.startDate,
       endDate: data.endDate,
+      description: data.description,
     };
+    
 
     try {
-      const response = await axios.post("http://localhost:3000/api/applyOwn/", submissionData, {
+      const response = await axios.post("http://localhost:3000/api/applyOwn", submissionData, {
         headers: { "Content-Type": "application/json" },
+        withCredentials: true, 
       });
+      
 
       console.log("Success:", response.data);
       if (response.status === 201) {

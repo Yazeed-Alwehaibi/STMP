@@ -3,14 +3,16 @@ import { db } from "../../db";
 import { presentation } from "../../db/schema/presentation";
 import { usersTable } from "../../db/schema/users";
 import { eq, and, isNull } from "drizzle-orm";
+import { AuthRequest } from "../../middleware/auth";
+import { z } from "zod";
 
-// GET /api/presentations?supervisorID=123
-export const getPresentationsBySupervisor = async (req: Request, res: Response): Promise<void> => {
+// GET /api/presentations
+export const getPresentationsBySupervisor = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { supervisorID } = req.query;
+    const supervisorID = req.user?.systemID;
 
     if (!supervisorID) {
-      res.status(400).json({ error: "SupervisorID is required" });
+      res.status(401).json({ error: "Unauthorized: No supervisor ID in token" });
       return;
     }
 
@@ -19,7 +21,7 @@ export const getPresentationsBySupervisor = async (req: Request, res: Response):
         id: presentation.presentationID,
         studentName: usersTable.UserName,
         fileUrl: presentation.fileUrl,
-        presentationDate: presentation.presentationDate,
+        date: presentation.presentationDate,
         mark: presentation.mark,
       })
       .from(presentation)
@@ -56,7 +58,7 @@ export const markPresentation = async (req: Request, res: Response): Promise<voi
 
     await db
       .update(presentation)
-      .set({ mark }) // Add feedback here if needed: .set({ mark, feedback })
+      .set({ mark }) // Add feedback if needed: .set({ mark, feedback })
       .where(eq(presentation.presentationID, Number(presentationID)));
 
     res.status(200).json({ message: "Presentation marked successfully" });
@@ -66,27 +68,47 @@ export const markPresentation = async (req: Request, res: Response): Promise<voi
   }
 };
 
-// POST /api/presentations/:presentationID/set-date
+const setDateSchema = z.object({
+  date: z.string().refine((val) => {
+    const date = new Date(val);
+    return !isNaN(date.getTime()) && date > new Date();
+  }, {
+    message: "Date cannot be in the past", // Updated this to match test expectations
+  }),
+});
+
 export const setPresentationDate = async (req: Request, res: Response): Promise<void> => {
   try {
     const { presentationID } = req.params;
-    const { date } = req.body;
 
-    if (!presentationID || !date) {
+    if (!presentationID || !req.body.date) {
       res.status(400).json({ error: "PresentationID and date are required" });
       return;
     }
 
-    // Convert string date to Date object
-    const presentationDate = new Date(date);
-
-    // Optional validation: Ensure future date
-    const now = new Date();
-    if (presentationDate < now) {
-      res.status(400).json({ error: "Date cannot be in the past" });
+    const parsed = setDateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.errors[0].message });
       return;
     }
 
+    const { date } = parsed.data;
+    const presentationDate = new Date(date);
+
+
+    // Check if the presentation exists using Drizzle ORM query
+    const existing = await db
+      .select()
+      .from(presentation)
+      .where(eq(presentation.presentationID, Number(presentationID)))
+      .limit(1);
+
+    if (existing.length === 0) {
+      res.status(404).json({ error: "Presentation not found" });
+      return;
+    }
+
+    // Update the presentation date
     await db
       .update(presentation)
       .set({ presentationDate })

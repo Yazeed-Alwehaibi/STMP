@@ -3,11 +3,13 @@ import { db } from "../../db/index";
 import { applications } from "../../db/schema/application";
 import { venues } from "../../db/schema/venues";
 import { eq } from "drizzle-orm";
+import { AuthRequest } from "../../middleware/auth";
 
-export const applyOwn = async (req: Request, res: Response): Promise<void> => {
-  const { venueName, website, systemID, startDate, endDate } = req.body;
+export const applyOwn = async (req: AuthRequest, res: Response): Promise<void> => {
+  const { venueName, website, description, startDate, endDate } = req.body;
+  const systemID = req.user?.systemID;
 
-  if (!venueName || !website || !systemID || !startDate || !endDate) {
+  if (!venueName || !website || !systemID || !description || !startDate || !endDate) {
     res.status(400).json({ error: "All fields are required" });
     return;
   }
@@ -27,6 +29,7 @@ export const applyOwn = async (req: Request, res: Response): Promise<void> => {
       const insertedVenue = await db.insert(venues).values({
         venueName,
         website,
+        description,
       }).returning();
 
       venueID = insertedVenue[0].venueID;

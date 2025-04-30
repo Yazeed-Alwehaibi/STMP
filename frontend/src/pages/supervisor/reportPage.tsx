@@ -1,5 +1,6 @@
 // pages/ReportMarkingPage.tsx
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,21 +39,20 @@ export default function ReportMarkingPage() {
     const fetchReports = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/api/reports?supervisorID=${user.systemID}`);
-        if (!response.ok) throw new Error("Failed to fetch reports");
+        const response = await axios.get("http://localhost:3000/api/reports", {
+          params: { supervisorID: user.systemID },
+          withCredentials: true,
+        });
 
-        const data = await response.json();
-        setReports(data);
+        setReports(response.data);
         setError(null);
-      } catch (err: unknown) {
-          if (err instanceof Error) {
-            setError(err.message);
-          } else {
-            setError("An unknown error occurred.");
-          }
-      } finally {
-        setLoading(false);
-      }
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          setError(err.response?.data?.error || "Failed to fetch reports");
+        } else {
+          setError("An unknown error occurred.");
+        }
+      }      
     };
 
     fetchReports();

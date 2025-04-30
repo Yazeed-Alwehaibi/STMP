@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,33 +19,41 @@ export default function PresentationPage() {
   const { user } = useUser();
   const [presentations, setPresentations] = useState<Presentation[]>([]);
   const [selectedPresentation, setSelectedPresentation] = useState<Presentation | null>(null);
-  const [date, setDate] = useState<string>(""); // Store the date as a string
+  const [date, setDate] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const supervisorID = user?.systemID;
+
 
   useEffect(() => {
-    if (!supervisorID) return;
+    if (!user?.systemID) return;
+
     setLoading(true);
-    fetch(`http://localhost:3000/api/presentations?supervisorID=${supervisorID}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setPresentations(data);
+    axios
+      .get("http://localhost:3000/api/presentations", {
+        withCredentials: true, // send token cookie
+      })
+      .then((res) => {
+        setPresentations(res.data);
         setError(null);
       })
       .catch(() => setError("Failed to load presentations"))
       .finally(() => setLoading(false));
-  }, [supervisorID]);
+  }, [user?.systemID]);
 
+  if (!user?.systemID) {
+    return <p>Please log in to view this page.</p>;
+  }
+  
   const handleSetDate = async () => {
     if (!selectedPresentation || !date) return;
     setLoading(true);
     try {
-      await fetch(`http://localhost:3000/api/presentations/${selectedPresentation.id}/set-date`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date }),
-      });
+      await axios.post(
+        `http://localhost:3000/api/presentations/${selectedPresentation.id}/set-date`,
+        { date },
+        { withCredentials: true }
+      );
+
       setPresentations((prev) =>
         prev.map((p) =>
           p.id === selectedPresentation.id ? { ...p, date } : p
@@ -73,7 +82,12 @@ export default function PresentationPage() {
               <CardContent>
                 <h2 className="text-lg font-semibold">{presentation.title}</h2>
                 <p className="text-sm text-gray-600">Submitted by {presentation.studentName}</p>
-                <a href={presentation.fileUrl} target="_blank" className="text-blue-500 underline">
+                <a
+                  href={presentation.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline"
+                >
                   View Presentation
                 </a>
                 <p className="mt-2 text-sm">Scheduled Date: {presentation.date || "Not set"}</p>

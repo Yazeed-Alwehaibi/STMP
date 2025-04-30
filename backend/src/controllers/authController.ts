@@ -8,9 +8,13 @@ import { eq } from "drizzle-orm";
 const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key";
 
 const getUserDetails = async (email: string) => {
-    const user = await db.select().from(usersTable).where(eq(usersTable.Email, email)).limit(1);
+    const user = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.Email, email))
+      .limit(1);
     return user.length ? user[0] : null;
-};
+  };
 
 export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;

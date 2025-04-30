@@ -3,7 +3,7 @@ import { usersTable } from "./users";
 import { venues } from "./venues";
 
 export const applications = pgTable("application", {
-  ApplicationID: serial("ApplicationID"), // serial automatically sets primary key
+  ApplicationID: serial("ApplicationID").primaryKey(), // serial automatically sets primary key
   supervisorID: integer("supervisorID").references(() => usersTable.SystemID),
   studentID: integer("studentID").references(() => usersTable.SystemID),
   repID: integer("repID").references(() => usersTable.SystemID),

@@ -1,29 +1,36 @@
 import { Request, Response } from "express";
 import { db } from "../../db/index";
-import { venues } from "../../db/schema/venues";
-import { venueDepartments } from "../../db/schema/venues";
+import { venues, venueDepartments } from "../../db/schema/venues";
 import { inArray } from "drizzle-orm";
+import { z } from "zod";
+
+const matchVenueSchema = z.object({
+  preferences: z.array(z.number().int()).min(1, "Select at least one preference"),
+});
 
 // POST /api/match-venues
 export const matchVenues = async (req: Request, res: Response): Promise<void> => {
-  const { preferences } = req.body;
+  const parseResult = matchVenueSchema.safeParse(req.body);
 
-  // Validate request
-  if (!Array.isArray(preferences) || preferences.length === 0) {
-    res.status(400).json({ error: "No preferences selected" });
+  if (!parseResult.success) {
+    res.status(400).json({ error: parseResult.error.flatten().fieldErrors });
     return;
   }
 
+  const { preferences } = parseResult.data;
+
   try {
-    // Step 1: Find venue IDs that match at least one of the preferences
+    // Step 1: Get all matching venue IDs
     const matchingVenueIDs = await db
       .select({ venueId: venueDepartments.venueId })
       .from(venueDepartments)
       .where(inArray(venueDepartments.departmentId, preferences));
 
-    const uniqueVenueIDs = [...new Set(matchingVenueIDs.map((entry) => entry.venueId))].filter((id): id is number => id !== null);
+    const uniqueVenueIDs = [...new Set(matchingVenueIDs.map((entry) => entry.venueId))].filter(
+      (id): id is number => id !== null
+    );
 
-    // Step 2: Fetch full venue details for those IDs
+    // Step 2: Get full venue details
     const matchedVenues = await db
       .select()
       .from(venues)

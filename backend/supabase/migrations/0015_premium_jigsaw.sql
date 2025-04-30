@@ -1,0 +1,3 @@
+ALTER TABLE "Reports" ADD COLUMN "trainingRepID" integer;--> statement-breakpoint
+ALTER TABLE "Reports" ADD CONSTRAINT "Reports_studentID_users_SystemID_fk" FOREIGN KEY ("studentID") REFERENCES "public"."users"("SystemID") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "Reports" ADD CONSTRAINT "Reports_trainingRepID_users_SystemID_fk" FOREIGN KEY ("trainingRepID") REFERENCES "public"."users"("SystemID") ON DELETE no action ON UPDATE no action;

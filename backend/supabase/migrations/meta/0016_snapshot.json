@@ -1,0 +1,761 @@
+{
+  "id": "1b568183-2cb1-4c32-9fa3-75693559d1dc",
+  "prevId": "df71c7eb-fcbf-4e9d-ad55-4e523d6b45b2",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.application": {
+      "name": "application",
+      "schema": "",
+      "columns": {
+        "ApplicationID": {
+          "name": "ApplicationID",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supervisorID": {
+          "name": "supervisorID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "repID": {
+          "name": "repID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "venueID": {
+          "name": "venueID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "endDate": {
+          "name": "endDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "application_supervisorID_users_SystemID_fk": {
+          "name": "application_supervisorID_users_SystemID_fk",
+          "tableFrom": "application",
+          "tableTo": "users",
+          "columnsFrom": [
+            "supervisorID"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "application_studentID_users_SystemID_fk": {
+          "name": "application_studentID_users_SystemID_fk",
+          "tableFrom": "application",
+          "tableTo": "users",
+          "columnsFrom": [
+            "studentID"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "application_repID_users_SystemID_fk": {
+          "name": "application_repID_users_SystemID_fk",
+          "tableFrom": "application",
+          "tableTo": "users",
+          "columnsFrom": [
+            "repID"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "application_venueID_Venue_venueID_fk": {
+          "name": "application_venueID_Venue_venueID_fk",
+          "tableFrom": "application",
+          "tableTo": "Venue",
+          "columnsFrom": [
+            "venueID"
+          ],
+          "columnsTo": [
+            "venueID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.offers": {
+      "name": "offers",
+      "schema": "",
+      "columns": {
+        "offerID": {
+          "name": "offerID",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "venueID": {
+          "name": "venueID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "repID": {
+          "name": "repID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "endDate": {
+          "name": "endDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "maxParticipant": {
+          "name": "maxParticipant",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "offers_venueID_Venue_venueID_fk": {
+          "name": "offers_venueID_Venue_venueID_fk",
+          "tableFrom": "offers",
+          "tableTo": "Venue",
+          "columnsFrom": [
+            "venueID"
+          ],
+          "columnsTo": [
+            "venueID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "offers_repID_Venue_repID_fk": {
+          "name": "offers_repID_Venue_repID_fk",
+          "tableFrom": "offers",
+          "tableTo": "Venue",
+          "columnsFrom": [
+            "repID"
+          ],
+          "columnsTo": [
+            "repID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.participants": {
+      "name": "participants",
+      "schema": "",
+      "columns": {
+        "participantID": {
+          "name": "participantID",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "offerID": {
+          "name": "offerID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "participants_participantID_users_SystemID_fk": {
+          "name": "participants_participantID_users_SystemID_fk",
+          "tableFrom": "participants",
+          "tableTo": "users",
+          "columnsFrom": [
+            "participantID"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "participants_offerID_offers_offerID_fk": {
+          "name": "participants_offerID_offers_offerID_fk",
+          "tableFrom": "participants",
+          "tableTo": "offers",
+          "columnsFrom": [
+            "offerID"
+          ],
+          "columnsTo": [
+            "offerID"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.presentation": {
+      "name": "presentation",
+      "schema": "",
+      "columns": {
+        "presentation_id": {
+          "name": "presentation_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "student_id": {
+          "name": "student_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supervisor_id": {
+          "name": "supervisor_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "application_id": {
+          "name": "application_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "presentation_date": {
+          "name": "presentation_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mark": {
+          "name": "mark",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(250)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fileUrl": {
+          "name": "fileUrl",
+          "type": "varchar(250)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "presentation_student_id_users_SystemID_fk": {
+          "name": "presentation_student_id_users_SystemID_fk",
+          "tableFrom": "presentation",
+          "tableTo": "users",
+          "columnsFrom": [
+            "student_id"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "presentation_supervisor_id_users_SystemID_fk": {
+          "name": "presentation_supervisor_id_users_SystemID_fk",
+          "tableFrom": "presentation",
+          "tableTo": "users",
+          "columnsFrom": [
+            "supervisor_id"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "presentation_application_id_application_ApplicationID_fk": {
+          "name": "presentation_application_id_application_ApplicationID_fk",
+          "tableFrom": "presentation",
+          "tableTo": "application",
+          "columnsFrom": [
+            "application_id"
+          ],
+          "columnsTo": [
+            "ApplicationID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Reports": {
+      "name": "Reports",
+      "schema": "",
+      "columns": {
+        "reportID": {
+          "name": "reportID",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trainingRepID": {
+          "name": "trainingRepID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "supervisorID": {
+          "name": "supervisorID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "applicationID": {
+          "name": "applicationID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "submissionDate": {
+          "name": "submissionDate",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "mark": {
+          "name": "mark",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "feedback": {
+          "name": "feedback",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "report_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(250)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fileUrl": {
+          "name": "fileUrl",
+          "type": "varchar(250)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Reports_studentID_users_SystemID_fk": {
+          "name": "Reports_studentID_users_SystemID_fk",
+          "tableFrom": "Reports",
+          "tableTo": "users",
+          "columnsFrom": [
+            "studentID"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Reports_trainingRepID_users_SystemID_fk": {
+          "name": "Reports_trainingRepID_users_SystemID_fk",
+          "tableFrom": "Reports",
+          "tableTo": "users",
+          "columnsFrom": [
+            "trainingRepID"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "SystemID": {
+          "name": "SystemID",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "UserID": {
+          "name": "UserID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "UserName": {
+          "name": "UserName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Email": {
+          "name": "Email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Role": {
+          "name": "Role",
+          "type": "Role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "DepartmentOrMajor": {
+          "name": "DepartmentOrMajor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ExtraInfo": {
+          "name": "ExtraInfo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Status": {
+          "name": "Status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Password": {
+          "name": "Password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_Email_unique": {
+          "name": "users_Email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "Email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.departments": {
+      "name": "departments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.venue_departments": {
+      "name": "venue_departments",
+      "schema": "",
+      "columns": {
+        "venue_id": {
+          "name": "venue_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "department_id": {
+          "name": "department_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "venue_departments_venue_id_Venue_venueID_fk": {
+          "name": "venue_departments_venue_id_Venue_venueID_fk",
+          "tableFrom": "venue_departments",
+          "tableTo": "Venue",
+          "columnsFrom": [
+            "venue_id"
+          ],
+          "columnsTo": [
+            "venueID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "venue_departments_department_id_departments_id_fk": {
+          "name": "venue_departments_department_id_departments_id_fk",
+          "tableFrom": "venue_departments",
+          "tableTo": "departments",
+          "columnsFrom": [
+            "department_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Venue": {
+      "name": "Venue",
+      "schema": "",
+      "columns": {
+        "venueID": {
+          "name": "venueID",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "venueName": {
+          "name": "venueName",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "repID": {
+          "name": "repID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "website": {
+          "name": "website",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating": {
+          "name": "rating",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Venue_repID_users_SystemID_fk": {
+          "name": "Venue_repID_users_SystemID_fk",
+          "tableFrom": "Venue",
+          "tableTo": "users",
+          "columnsFrom": [
+            "repID"
+          ],
+          "columnsTo": [
+            "SystemID"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.report_type": {
+      "name": "report_type",
+      "schema": "public",
+      "values": [
+        "1",
+        "2",
+        "3",
+        "final"
+      ]
+    },
+    "public.Role": {
+      "name": "Role",
+      "schema": "public",
+      "values": [
+        "Supervisor",
+        "Student",
+        "Training Representative"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

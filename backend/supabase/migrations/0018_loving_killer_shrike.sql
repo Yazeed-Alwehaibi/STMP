@@ -1,0 +1,1 @@
+ALTER TABLE "Reports" ADD CONSTRAINT "Reports_applicationID_application_ApplicationID_fk" FOREIGN KEY ("applicationID") REFERENCES "public"."application"("ApplicationID") ON DELETE no action ON UPDATE no action;

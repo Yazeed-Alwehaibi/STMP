@@ -16,6 +16,7 @@ export const venues = pgTable(
     location: varchar("location", { length: 100 }),
     website: text("website"),
     rating: decimal("rating", { precision: 4, scale: 2 }),
+    description: text("description"),
   },
 );
 

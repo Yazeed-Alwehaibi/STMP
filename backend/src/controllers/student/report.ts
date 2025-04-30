@@ -2,12 +2,20 @@ import { Request, Response } from "express";
 import { db } from "../../db/index";
 import { reports } from "../../db/schema/reports";
 import { applications } from "../../db/schema/application";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { reportTypeEnum } from "../../db/schema/reports";
 
-// Setup multer to use memory storage
+// Define a custom Request type to add user data (systemID) from JWT or session
+interface AuthRequest extends Request {
+  user?: {
+    systemID: string;
+    // Add other user fields if needed (e.g., role)
+  };
+}
+
+// Setup multer to handle file uploads, with file type validation
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
@@ -20,18 +28,20 @@ const upload = multer({
   },
 }).single("file");
 
-// Get application ID by system ID
+// Function to fetch the accepted application ID for a student
 export const getApplicationIDBySystemID = async (systemID: string): Promise<number | null> => {
   try {
     const result = await db
       .select({ applicationID: applications.ApplicationID })
       .from(applications)
       .where(
-        eq(applications.studentID, parseInt(systemID, 10)) &&
-        eq(applications.status, "accepted")
+        and(
+          eq(applications.studentID, parseInt(systemID, 10)),
+          eq(applications.status, "accepted")
+        )
       )
       .limit(1);
-
+      
     return result.length > 0 ? result[0].applicationID : null;
   } catch (error) {
     console.error("Error fetching applicationID:", error);
@@ -39,29 +49,36 @@ export const getApplicationIDBySystemID = async (systemID: string): Promise<numb
   }
 };
 
-// Submit report
-export const submitReport = async (req: Request, res: Response): Promise<void> => {
+// Submit report handler
+export const submitReport = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    console.log("Received Data:", req.body);  // Log incoming data
-    const { systemID, reportType, reportContent, fileUrl } = req.body;
+    // Extract user and request data
+    const systemID = req.user?.systemID;
+    const { reportType, reportContent, fileUrl } = req.body;
 
-    if (!systemID || !reportType || !fileUrl) {
+    // Validation: Check for missing required fields
+    if (!systemID || !reportType || !fileUrl || !reportContent) {
       res.status(400).json({ error: "All required fields must be provided" });
       return;
     }
 
+    // Validate report type
     if (!reportTypeEnum.enumValues.includes(reportType)) {
       res.status(400).json({ error: "Invalid report type" });
       return;
-
     }
 
+
+
+    // Fetch the application ID associated with the student
     const applicationID = await getApplicationIDBySystemID(systemID);
     if (!applicationID) {
-      res.status(404).json({ error: "Application not found or not accepted" });
-      return;
+     res.status(404).json({ error: "No accepted application found" });
+     return;
     }
 
+
+    // Fetch application details, including supervisor information
     const application = await db
       .select()
       .from(applications)
@@ -71,6 +88,7 @@ export const submitReport = async (req: Request, res: Response): Promise<void> =
     const studentID = application[0].studentID;
     const supervisorID = application[0].supervisorID;
 
+    // Insert the new report into the database
     const newReport = await db
       .insert(reports)
       .values({
@@ -83,9 +101,10 @@ export const submitReport = async (req: Request, res: Response): Promise<void> =
       } as typeof reports.$inferInsert)
       .returning();
 
+    // Log and respond with success
     console.log("Report stored in the database:", newReport[0]);
-
     res.status(201).json({ message: "Report submitted successfully", report: newReport[0] });
+
   } catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Database error" });

@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
-import { useUser } from "../../context/UserContext"; // Assuming UserContext is in this path
+import { useUser } from "../../context/UserContext";
+import axios from "axios";
 
 type PresentationFormData = {
-  applicationID: string;
   file: FileList;
 };
 
 export default function PresentationSubmission() {
-  const { user } = useUser(); // Access user context to get systemID
-  const systemID = user?.systemID; // Get systemID from user context
+  const { user } = useUser();
+
   const {
     register,
     handleSubmit,
@@ -19,6 +19,11 @@ export default function PresentationSubmission() {
   } = useForm<PresentationFormData>();
 
   const [submitting, setSubmitting] = useState(false);
+
+  if (!user) {
+    toast.error("User not found.");
+    return;
+  }
 
   const onSubmit = async (data: PresentationFormData) => {
     if (!data.file || data.file.length === 0) {
@@ -33,40 +38,34 @@ export default function PresentationSubmission() {
       const uploadForm = new FormData();
       uploadForm.append("file", data.file[0]);
 
-      const uploadRes = await fetch("http://localhost:3000/api/upload", {
-        method: "POST",
-        body: uploadForm,
-      });
+      const uploadRes = await axios.post(
+        "http://localhost:3000/api/upload",
+        uploadForm,
+        { withCredentials: true }
+      );
 
-      if (!uploadRes.ok) {
-        toast.error("File upload failed.");
-        return;
-      }
+      const { fileUrl } = uploadRes.data;
 
-      const { fileUrl } = await uploadRes.json();
+      // Step 2: Submit the presentation metadata
+      const presentationRes = await axios.post(
+        "http://localhost:3000/api/presentation/submit",
+        {
+          fileUrl,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
 
-      // Step 2: Submit presentation data with file URL and systemID from UserContext
-      const formData = new FormData();
-      formData.append("systemID", systemID ?? "");
-      formData.append("presentationFile", fileUrl); // Use the uploaded file URL
-
-      const presentationRes = await fetch("http://localhost:3000/api/presentation/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemID: systemID, // Pass systemID from UserContext
-          fileUrl: fileUrl,
-        }),
-      }); 
-
-      if (presentationRes.ok) {
-        alert("Presentation submitted successfully.");
+      if (presentationRes.status === 201) {
         toast.success("Presentation submitted successfully.");
         reset();
       } else {
         toast.error("Failed to submit presentation.");
       }
-    } catch {
+    } catch (error) {
+      console.error("Submission error:", error);
       toast.error("An error occurred while submitting.");
     } finally {
       setSubmitting(false);
@@ -83,11 +82,13 @@ export default function PresentationSubmission() {
           <label className="block text-lg">Attach PowerPoint File (PPTX only):</label>
           <input
             type="file"
-            accept="application/pptx"
+            accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
             {...register("file", { required: "File is required" })}
             className="block w-full p-3 text-lg border rounded"
           />
-          {errors.file && <p className="text-red-500 text-sm">{errors.file.message}</p>}
+          {errors.file && (
+            <p className="text-red-500 text-sm">{errors.file.message}</p>
+          )}
         </div>
 
         <div className="mt-4">

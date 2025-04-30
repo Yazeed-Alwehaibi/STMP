@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
-import { useUser } from "../../context/UserContext"; // Assuming UserContext is in this path
+import { useUser } from "../../context/UserContext";
+import axios from "axios";
+import type { AxiosError } from "axios";
+
 
 type ReportFormData = {
   type: string;
@@ -10,7 +13,7 @@ type ReportFormData = {
 };
 
 export default function ReportSubmission() {
-  const { user } = useUser(); // Access user context to get systemID
+  const { user } = useUser();
   const {
     register,
     handleSubmit,
@@ -34,45 +37,29 @@ export default function ReportSubmission() {
     setSubmitting(true);
 
     try {
-      // Step 1: Upload the file
+      // Step 1: Upload file
       const uploadForm = new FormData();
       uploadForm.append("file", data.file[0]);
 
-      const uploadRes = await fetch("http://localhost:3000/api/upload", {
-        method: "POST",
-        body: uploadForm,
+      const uploadRes = await axios.post("http://localhost:3000/api/upload", uploadForm);
+      const { fileUrl } = uploadRes.data;
+
+      // Step 2: Submit report (no systemID included)
+      await axios.post("http://localhost:3000/api/report/submit", {
+        reportType: data.type,
+        reportContent: data.content ?? "",
+        fileUrl,
+      }, {
+        withCredentials: true, // This ensures that cookies are sent with the request
       });
 
-      if (!uploadRes.ok) {
-        toast.error("File upload failed.");
-        return;
-      }
-
-      const { fileUrl } = await uploadRes.json();
-
-      // Step 2: Submit report data with file URL and systemID from UserContext
-      const reportRes = await fetch("http://localhost:3000/api/report/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemID: user.systemID, // Pass systemID from UserContext
-          reportType: data.type,
-          reportContent: data.content ?? "",
-          fileUrl,
-        }),
-      });
-
-      if (reportRes.ok) {
-        alert("Report submitted successfully.");
-        toast.success("Report submitted successfully.");
-        reset();
-      } else {
-        toast.error("Failed to submit report.");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("An error occurred while submitting.");
-    } finally {
+      toast.success("Report submitted successfully.");
+      reset();
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      console.error(err);
+      toast.error(err.response?.data?.error || "An error occurred while submitting.");
+    }finally {
       setSubmitting(false);
     }
   };

@@ -6,23 +6,25 @@ import { matchVenues } from '../controllers/student/suggestion';
 import { applyForVenue } from '../controllers/student/suggest';
 import { getActiveOffers } from '../controllers/student/offer';
 import { applyToOffer } from '../controllers/student/offer';
+import { authenticateUser } from "../middleware/auth"; 
 
 
 const router = Router();
 
-router.post('/applyOwn', applyOwn);
 
-router.post("/report/submit", submitReport);
+router.post('/applyOwn', authenticateUser, applyOwn);
 
-router.post("/presentation/submit", submitPresentation);
+router.post("/report/submit", authenticateUser, submitReport);
 
-router.post("/match-venues", matchVenues);
+router.post("/presentation/submit", authenticateUser, submitPresentation);
 
-router.post("/apply-suggest", applyForVenue);
+router.post("/match-venues", authenticateUser, matchVenues);
+
+router.post("/apply-suggest", authenticateUser, applyForVenue);
 
 router.get("/fetchOffers", getActiveOffers);
 
-router.post("/applyToOffer", applyToOffer);
+router.post("/applyToOffer", authenticateUser, applyToOffer);
 
 
 export default router;
