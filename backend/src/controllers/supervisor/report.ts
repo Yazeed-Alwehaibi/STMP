@@ -25,12 +25,11 @@ export const getReportsBySupervisor = async (req: AuthRequest, res: Response): P
 
     const supervisorReports = await db
   .select({
-    id: reports.reportID,
+    reportID: reports.reportID,
     studentName: usersTable.UserName,
-    supervisorID: reports.supervisorID,
     mark: reports.mark,
     feedback: reports.feedback,
-    fileUrl: reports.fileUrl, // <-- add this line
+    fileUrl: reports.fileUrl, 
   })
   .from(reports)
   .innerJoin(usersTable, eq(reports.studentID, usersTable.SystemID))
@@ -44,9 +43,9 @@ export const getReportsBySupervisor = async (req: AuthRequest, res: Response): P
     // Convert report ID to string if needed
     const formatted = supervisorReports.map((r) => ({
       ...r,
-      id: String(r.id),
+      reportID: String(r.reportID),
     }));
-
+    
     res.status(200).json(formatted);
   } catch (error) {
     console.error("Error fetching reports:", error);

@@ -1,4 +1,3 @@
-// pages/ReportMarkingPage.tsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,16 +33,19 @@ export default function ReportMarkingPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user?.systemID) return;
-
     const fetchReports = async () => {
+      if (!user?.systemID) {
+        console.warn("User systemID not available yet");
+        return;
+      }
+
+      setLoading(true);
       try {
-        setLoading(true);
         const response = await axios.get("http://localhost:3000/api/reports", {
-          params: { supervisorID: user.systemID },
           withCredentials: true,
         });
 
+        console.log("Fetched reports:", response.data);
         setReports(response.data);
         setError(null);
       } catch (err) {
@@ -52,7 +54,9 @@ export default function ReportMarkingPage() {
         } else {
           setError("An unknown error occurred.");
         }
-      }      
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchReports();
@@ -76,6 +80,7 @@ export default function ReportMarkingPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mark, feedback }),
+        credentials: "include",
       });
 
       if (!response.ok) throw new Error("Failed to submit mark.");
@@ -102,12 +107,17 @@ export default function ReportMarkingPage() {
       setLoading(false);
     }
   };
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Report Viewing & Marking</h1>
 
       {loading ? (
         <p>Loading reports...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : reports.length === 0 ? (
+        <p>No reports found.</p>
       ) : (
         <div className="grid gap-4">
           {reports.map((report) => (
@@ -131,8 +141,6 @@ export default function ReportMarkingPage() {
           ))}
         </div>
       )}
-
-      {error && <p className="text-red-500 mt-2">{error}</p>}
 
       <Dialog open={!!selectedReport} onOpenChange={() => setSelectedReport(null)}>
         <DialogContent>
