@@ -1,28 +1,24 @@
-import { db } from "../../db/index"; 
+import { db } from "../../db/index";
 import { offers } from "../../db/schema/offers";
 import { participants } from "../../db/schema/participants";
 import { usersTable } from "../../db/schema/users";
 import { eq } from "drizzle-orm";
-import { Request, Response } from "express";
+import { Response } from "express";
+import { AuthRequest } from "../../middleware/auth";
 
 // Helper to extract GPA from ExtraInfo string
 function extractGPA(extraInfo: string | null): string {
   if (!extraInfo) return "N/A";
-
   const match = extraInfo.match(/GPA:\s*([\d.]+)/);
-  if (match && match[1]) {
-    return match[1];
-  }
-
-  return "N/A";
+  return match?.[1] ?? "N/A";
 }
 
 // Fetch offers created by the rep
-export const fetchRepOffers = async (req: Request, res: Response): Promise<void> => {
-  const { repID } = req.query;
+export const fetchRepOffers = async (req: AuthRequest, res: Response): Promise<void> => {
+  const repID = req.user?.systemID;
 
   if (!repID) {
-    res.status(400).json({ error: "Missing repID" });
+    res.status(401).json({ success: false, message: "Unauthorized: Missing systemID in token" });
     return;
   }
 
@@ -31,20 +27,20 @@ export const fetchRepOffers = async (req: Request, res: Response): Promise<void>
       .select()
       .from(offers)
       .where(eq(offers.repID, Number(repID)));
-    
-    res.json(repOffers);
+
+    res.json({ success: true, offers: repOffers });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to fetch offers." });
+    res.status(500).json({ success: false, message: "Failed to fetch offers." });
   }
 };
 
 // Fetch participants and their information for a specific offer
-export const fetchOfferParticipants = async (req: Request, res: Response): Promise<void> => {
+export const fetchOfferParticipants = async (req: AuthRequest, res: Response): Promise<void> => {
   const { offerID } = req.query;
 
   if (!offerID) {
-    res.status(400).json({ error: "Missing offerID" });
+    res.status(400).json({ success: false, message: "Missing offerID" });
     return;
   }
 
@@ -72,19 +68,19 @@ export const fetchOfferParticipants = async (req: Request, res: Response): Promi
       gpa: extractGPA(p.ExtraInfo ?? null),
     }));
 
-    res.json(mappedParticipants);
+    res.json({ success: true, participants: mappedParticipants });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to fetch participants." });
+    res.status(500).json({ success: false, message: "Failed to fetch participants." });
   }
 };
 
 // Accept participant
-export const acceptParticipant = async (req: Request, res: Response): Promise<void> => {
+export const acceptParticipant = async (req: AuthRequest, res: Response): Promise<void> => {
   const { participantID } = req.body;
 
   if (!participantID) {
-    res.status(400).json({ error: "Missing participantID" });
+    res.status(400).json({ success: false, message: "Missing participantID" });
     return;
   }
 
@@ -94,19 +90,19 @@ export const acceptParticipant = async (req: Request, res: Response): Promise<vo
       .set({ status: "accepted" })
       .where(eq(participants.participantID, Number(participantID)));
 
-    res.json({ message: "Participant accepted." });
+    res.json({ success: true, message: "Participant accepted." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to accept participant." });
+    res.status(500).json({ success: false, message: "Failed to accept participant." });
   }
 };
 
 // Reject participant
-export const rejectParticipant = async (req: Request, res: Response): Promise<void> => {
+export const rejectParticipant = async (req: AuthRequest, res: Response): Promise<void> => {
   const { participantID } = req.body;
 
   if (!participantID) {
-    res.status(400).json({ error: "Missing participantID" });
+    res.status(400).json({ success: false, message: "Missing participantID" });
     return;
   }
 
@@ -116,9 +112,9 @@ export const rejectParticipant = async (req: Request, res: Response): Promise<vo
       .set({ status: "rejected" })
       .where(eq(participants.participantID, Number(participantID)));
 
-    res.json({ message: "Participant rejected." });
+    res.json({ success: true, message: "Participant rejected." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to reject participant." });
+    res.status(500).json({ success: false, message: "Failed to reject participant." });
   }
 };
