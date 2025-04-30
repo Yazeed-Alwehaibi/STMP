@@ -34,12 +34,12 @@ const CreateOfferForm = () => {
 
     const submissionData = {
       ...data,
-      repID: user.systemID,
     };
 
     try {
       const response = await axios.post("http://localhost:3000/api/offers", submissionData, {
         headers: { "Content-Type": "application/json" },
+        withCredentials: true
       });
 
       console.log("Success:", response.data);

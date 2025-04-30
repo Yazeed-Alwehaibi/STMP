@@ -1,15 +1,17 @@
 import { Router } from "express";
 import { createOffer } from "../controllers/rep/offers";
 import { fetchRepOffers, fetchOfferParticipants, acceptParticipant, rejectParticipant} from "../controllers/rep/application";
+import { authenticateUser } from "../middleware/auth"; 
+
 const router = Router();
 
-router.post("/offers", createOffer);
+router.post("/offers", authenticateUser, createOffer);
 
-router.get("/fetchRepOffers", fetchRepOffers); // ?repID=
-router.get("/fetchOfferParticipants", fetchOfferParticipants); // ?offerID=
+router.get("/fetchRepOffers", authenticateUser, fetchRepOffers); // ?repID=
+router.get("/fetchOfferParticipants", authenticateUser, fetchOfferParticipants); // ?offerID=
 
-router.post("/acceptParticipant", acceptParticipant);
-router.post("/rejectParticipant", rejectParticipant);
+router.post("/acceptParticipant", authenticateUser, acceptParticipant);
+router.post("/rejectParticipant", authenticateUser, rejectParticipant);
 
 
 export default router;

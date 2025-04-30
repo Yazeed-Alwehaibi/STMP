@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useUser } from "../../context/UserContext"; // Import the user context
 
 type Offer = {
   offerID: number;
@@ -20,18 +19,18 @@ type Participant = {
 };
 
 const RepApplications = () => {
-  const { user } = useUser(); // Get user data (rep's ID)
   const [offers, setOffers] = useState<Offer[]>([]);
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [loadingParticipants, setLoadingParticipants] = useState(false);
 
-  const repID = user?.systemID ;
-
   useEffect(() => {
     const fetchOffers = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/fetchRepOffers?repID=${repID}`);
+        const response = await axios.get("http://localhost:3000/api/fetchRepOffers", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
         setOffers(response.data);
       } catch (error) {
         console.error("Error fetching offers:", error);
@@ -39,12 +38,15 @@ const RepApplications = () => {
     };
 
     fetchOffers();
-  }, [repID]);
+  }, []);
 
   const fetchParticipants = async (offerID: number) => {
     setLoadingParticipants(true);
     try {
-      const response = await axios.get(`http://localhost:3000/api/fetchOfferParticipants?offerID=${offerID}`);
+      const response = await axios.get(`http://localhost:3000/api/fetchOfferParticipants?offerID=${offerID}`, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
       setParticipants(response.data);
     } catch (error) {
       console.error("Error fetching participants:", error);
@@ -55,12 +57,16 @@ const RepApplications = () => {
 
   const handleAccept = async (participantID: number) => {
     try {
-      await axios.post("http://localhost:3000/api/acceptParticipant", { participantID });
+      await axios.post(
+        "http://localhost:3000/api/acceptParticipant",
+        { participantID },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
       alert("Participant Accepted!");
-      // Refresh participants
-      if (selectedOffer) {
-        fetchParticipants(selectedOffer.offerID);
-      }
+      if (selectedOffer) fetchParticipants(selectedOffer.offerID);
     } catch (error) {
       console.error("Error accepting participant:", error);
     }
@@ -68,12 +74,16 @@ const RepApplications = () => {
 
   const handleReject = async (participantID: number) => {
     try {
-      await axios.post("http://localhost:3000/api/rejectParticipant", { participantID });
+      await axios.post(
+        "http://localhost:3000/api/rejectParticipant",
+        { participantID },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
       alert("Participant Rejected!");
-      // Refresh participants
-      if (selectedOffer) {
-        fetchParticipants(selectedOffer.offerID);
-      }
+      if (selectedOffer) fetchParticipants(selectedOffer.offerID);
     } catch (error) {
       console.error("Error rejecting participant:", error);
     }
@@ -97,7 +107,6 @@ const RepApplications = () => {
         ))}
       </div>
 
-      {/* Dialog for participants */}
       {selectedOffer && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-2/3 relative">
