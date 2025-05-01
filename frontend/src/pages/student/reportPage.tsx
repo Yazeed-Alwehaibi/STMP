@@ -53,6 +53,7 @@ export default function ReportSubmission() {
       );
 
       toast.success("Report submitted successfully.");
+      alert("Report submitted successfully.");
       reset();
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
@@ -85,7 +86,7 @@ export default function ReportSubmission() {
           </div>
 
           <div>
-            <label>Content (optional):</label>
+            <label>Content:</label>
             <textarea
               {...register("content")}
               className="block w-full border p-2 bg-white shadow-lg"

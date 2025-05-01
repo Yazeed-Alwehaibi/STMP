@@ -2,6 +2,8 @@ import { db } from "../../db/index";
 import { offers } from "../../db/schema/offers";
 import { participants } from "../../db/schema/participants";
 import { eq , and } from "drizzle-orm";
+import { AuthRequest } from "../../middleware/auth";
+
 
 export const getActiveOffers = async (req: any, res: any) => {
   try {
@@ -20,8 +22,9 @@ export const getActiveOffers = async (req: any, res: any) => {
 
 
 
-export const applyToOffer = async (req: any, res: any) => {
-    const { offerID, studentID } = req.body;
+export const applyToOffer = async (req: AuthRequest, res: any) => {
+    const { offerID } = req.body;
+    const studentID = req.user?.systemID; // Assuming you have a way to get the student ID from the request
   
     if (!offerID || !studentID) {
       return res.status(400).json({ error: "Missing offerID or studentID" });
@@ -34,7 +37,7 @@ export const applyToOffer = async (req: any, res: any) => {
         .where(
           and(
             eq(participants.offerID, offerID),
-            eq(participants.studentID, studentID)
+            eq(participants.studentID, Number(studentID))
           )
         )
         .limit(1); // Only check the first match
@@ -45,8 +48,8 @@ export const applyToOffer = async (req: any, res: any) => {
   
       // Insert if not applied
       await db.insert(participants).values({
-        offerID,
-        studentID,
+        offerID: Number(offerID),
+        studentID: Number(studentID),
         status: "pending",
       });
   

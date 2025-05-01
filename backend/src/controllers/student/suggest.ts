@@ -2,27 +2,28 @@ import { Request, Response } from "express";
 import { db } from "../../db/index";
 import { applications } from "../../db/schema/application";
 import { z } from "zod";
+import { AuthRequest } from "../../middleware/auth";
 
 const applySchema = z.object({
-  systemID: z.number({ required_error: "systemID is required" }),
   venueID: z.number({ required_error: "venueID is required" }),
 });
 
 // POST /api/apply-suggest
-export const applyForVenue = async (req: Request, res: Response): Promise<void> => {
+export const applyForVenue = async (req: AuthRequest, res: Response): Promise<void> => {
   const parseResult = applySchema.safeParse(req.body);
+  const studentID = req.user?.systemID; 
 
   if (!parseResult.success) {
     res.status(400).json({ error: parseResult.error.flatten().fieldErrors });
     return;
   }
 
-  const { systemID, venueID } = parseResult.data;
+  const { venueID } = parseResult.data;
 
   try {
     await db.insert(applications).values({
-      studentID: systemID,
-      venueID,
+      studentID: Number(studentID),
+      venueID: parseResult.data.venueID,
       status: "pending",
     });
 

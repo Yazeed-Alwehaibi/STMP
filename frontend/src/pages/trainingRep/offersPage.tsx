@@ -18,7 +18,9 @@ const CreateOfferForm = () => {
       endDate: "",
       maxParticipant: 0,
     },
+    mode: "onSubmit",
   });
+  
 
   const onSubmit = async (data: {
     title: string;
@@ -34,8 +36,9 @@ const CreateOfferForm = () => {
 
     const submissionData = {
       ...data,
+      maxParticipant: Number(data.maxParticipant),
     };
-
+    
     try {
       const response = await axios.post("http://localhost:3000/api/offers", submissionData, {
         headers: { "Content-Type": "application/json" },
@@ -115,9 +118,14 @@ const CreateOfferForm = () => {
         <label className="block text-sm font-medium">Max Participants</label>
         <input
           type="number"
-          {...register("maxParticipant", { required: "Max participants is required", min: 1 })}
+          {...register("maxParticipant", {
+            required: "Max participants is required",
+            min: { value: 1, message: "Must be at least 1" },
+            valueAsNumber: true, // This is key!
+          })}
           className="w-full p-2 border rounded-md border-black"
         />
+
         {errors.maxParticipant && (
           <p className="text-red-500 text-sm">{errors.maxParticipant.message}</p>
         )}

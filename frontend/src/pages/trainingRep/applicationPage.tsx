@@ -31,14 +31,19 @@ const RepApplications = () => {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-        setOffers(response.data);
+        if (response.data.success && Array.isArray(response.data.offers)) {
+          setOffers(response.data.offers);
+        } else {
+          console.error("Unexpected response:", response.data);
+        }
       } catch (error) {
         console.error("Error fetching offers:", error);
       }
     };
-
+  
     fetchOffers();
   }, []);
+  
 
   const fetchParticipants = async (offerID: number) => {
     setLoadingParticipants(true);
@@ -47,7 +52,12 @@ const RepApplications = () => {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
-      setParticipants(response.data);
+      if (response.data.success && Array.isArray(response.data.participants)) {
+        setParticipants(response.data.participants);
+      } else {
+        console.error("Unexpected response:", response.data);
+      }
+      
     } catch (error) {
       console.error("Error fetching participants:", error);
     } finally {

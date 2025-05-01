@@ -56,17 +56,25 @@ export default function PresentationSubmission() {
       );
 
       if (presentationRes.status === 201) {
-        toast.success("Presentation submitted successfully.");
+        alert("Presentation submitted successfully.");
         reset();
       } else {
         toast.error("Failed to submit presentation.");
       }
     } catch (error) {
-      console.error("Submission error:", error);
-      toast.error("An error occurred while submitting.");
-    } finally {
-      setSubmitting(false);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 409) {
+          alert("You’ve already submitted your presentation.");
+        } else if (error.response?.data?.error) {
+          alert(error.response.data.error);
+        } else {
+          alert("An error occurred while submitting.");
+        }
+      } else {
+        alert("An unexpected error occurred.");
+      }
     }
+    
   };
 
   return (

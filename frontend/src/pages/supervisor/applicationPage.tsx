@@ -49,6 +49,9 @@ export default function SupervisorApplications() {
         applicationID: app.applicationID,
       }));
       setApplications(formatted);
+      if (response.status === 404) {
+        alert("No applications available.");
+      }
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         console.error("Fetch error:", err.response?.data || err.message);

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useUser } from "../../../context/UserContext"; // Import the user context
 
 type Offer = {
   offerID: number;
@@ -11,7 +10,6 @@ type Offer = {
 };
 
 const OffersList = () => {
-  const { user } = useUser(); // Get user data (student's systemID)
   const [offers, setOffers] = useState<Offer[]>([]);
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [appliedOffers, setAppliedOffers] = useState<number[]>([]); // Track applied offers
@@ -32,17 +30,19 @@ const OffersList = () => {
 
   // Handle apply button click
   const handleApply = async (offerID: number) => {
-    if (!user) {
-      alert("You must be logged in to apply.");
-      return;
-    }
 
     try {
       // POST request to apply for the offer
-      const response = await axios.post("http://localhost:3000/api/applyToOffer", {
-        offerID,
-        studentID: user.systemID, // Use student's systemID
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/applyToOffer",
+        {
+          offerID,
+        },
+        {
+          withCredentials: true, // 🔐 Include cookies
+        }
+      );
+      
 
       console.log(response.data);
       alert("Applied successfully! 🎉");

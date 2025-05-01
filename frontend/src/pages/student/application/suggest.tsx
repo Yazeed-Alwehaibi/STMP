@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useUser } from "../../../context/UserContext";
+
 
 const departments = [
   { id: 1, name: "Computer Science" },
@@ -25,7 +25,6 @@ interface Venue {
 
 
 export default function Suggestions() {
-  const { user } = useUser();
   const [selectedPrefs, setSelectedPrefs] = useState<number[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
@@ -40,14 +39,17 @@ export default function Suggestions() {
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post("http://localhost:3000/api/match-venues", {
-        preferences: selectedPrefs,
-      });
+      const res = await axios.post(
+        "http://localhost:3000/api/match-venues",
+        { preferences: selectedPrefs },
+        { withCredentials: true } // Include credentials (cookies)
+      );
       setVenues(res.data);
     } catch (err) {
       console.error("Failed to fetch venues", err);
     }
   };
+  
 
   const openDialog = (venue: Venue) => {
     setSelectedVenue(venue);
@@ -64,9 +66,10 @@ export default function Suggestions() {
   
     try {
       await axios.post("http://localhost:3000/api/apply-suggest", {
-        systemID: user?.systemID,
         venueID: selectedVenue.venueID,
-      });
+        
+      }, { withCredentials: true });
+      
       alert(`Application submitted to ${selectedVenue.venueName}`);
       closeDialog();
     } catch (error) {
