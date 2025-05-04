@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useUser } from "../../context/UserContext";
+import SupervisorLayout from '../../components/layouts/supervisor_layout';
 
 interface Presentation {
   id: string;
@@ -71,57 +72,61 @@ export default function PresentationPage() {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Presentation Scheduling</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="grid gap-4">
-          {presentations.map((presentation) => (
-            <Card key={presentation.id} className="p-4">
-              <CardContent>
-                <h2 className="text-lg font-semibold">{presentation.title}</h2>
-                <p className="text-sm text-gray-600">Submitted by {presentation.studentName}</p>
-                <a
-                  href={presentation.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 underline"
-                >
-                  View Presentation
-                </a>
-                <p className="mt-2 text-sm">Scheduled Date: {presentation.date || "Not set"}</p>
-                <Button className="mt-2" onClick={() => setSelectedPresentation(presentation)}>
-                  Set Date
+    <SupervisorLayout>
+      <div className="row-span-12 col-span-12 bg-[#e7e7f3] rounded-2xl mb-4 p-4">
+        <h1 className="text-2xl font-bold mb-4">Presentation Scheduling</h1>
+        <div className="grid grid-col-3 bg-[rgb(81,181,214)] rounded-2xl mb-4 p-2">
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {presentations.map((presentation) => (
+              <Card key={presentation.id} className="p-4">
+                <CardContent>
+                  <h2 className="text-lg font-semibold">{presentation.title}</h2>
+                  <p className="text-sm text-gray-600">Submitted by {presentation.studentName}</p>
+                  <a
+                    href={presentation.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    View Presentation
+                  </a>
+                  <p className="mt-2 text-sm">Scheduled Date: {presentation.date || "Not set"}</p>
+                  <Button className="mt-2" onClick={() => setSelectedPresentation(presentation)}>
+                    Set Date
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+            </div>
+          )}
+
+          {error && <p className="text-red-500 mt-4">{error}</p>}
+
+          <Dialog open={!!selectedPresentation} onOpenChange={() => setSelectedPresentation(null)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Set Presentation Date</DialogTitle>
+              </DialogHeader>
+              <div>
+                <h2 className="font-semibold mb-2">{selectedPresentation?.title}</h2>
+                <p className="text-sm text-gray-600 mb-4">By {selectedPresentation?.studentName}</p>
+                <Input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full p-2 border rounded-md border-black"
+                />
+                <Button className="mt-4" onClick={handleSetDate} disabled={loading}>
+                  Save Date
                 </Button>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
-      )}
-
-      {error && <p className="text-red-500 mt-4">{error}</p>}
-
-      <Dialog open={!!selectedPresentation} onOpenChange={() => setSelectedPresentation(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Set Presentation Date</DialogTitle>
-          </DialogHeader>
-          <div>
-            <h2 className="font-semibold mb-2">{selectedPresentation?.title}</h2>
-            <p className="text-sm text-gray-600 mb-4">By {selectedPresentation?.studentName}</p>
-            <Input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full p-2 border rounded-md border-black"
-            />
-            <Button className="mt-4" onClick={handleSetDate} disabled={loading}>
-              Save Date
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+      </div>
+    </SupervisorLayout>
   );
 }

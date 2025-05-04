@@ -79,52 +79,55 @@ export default function Suggestions() {
   };
 
   return (
-    <div className="grid grid-cols-2 row-7 gap-3">
-      <div className="grid grid-cols-2 col-1 row-span-7 gap-1 mb-6">
-      <h1 className=" col-span-2 row-1 text-2xl font-bold mb-4">Select Your Training Preferences</h1>
-        {departments.map((dept) => (
-          <label key={dept.id} className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={selectedPrefs.includes(dept.id)}
-              onChange={() => handleCheckboxChange(dept.id)}
-              className="accent-blue-600"
-            />
-            {dept.name}
-          </label>
-        ))}
+    <div className="flex flex flex-col grid gap-1">
+      <div className="bg-[#e7e7f3] p-4 rounded-2xl mb-4">
+        <div className="grid grid-cols-2 col-1 row-span-7 gap-1 mb-6">
+        <h1 className=" col-span-2 row-1 text-2xl font-bold mb-4">Select Your Training Preferences</h1>
+          {departments.map((dept) => (
+            <label key={dept.id} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selectedPrefs.includes(dept.id)}
+                onChange={() => handleCheckboxChange(dept.id)}
+                className="accent-blue-600"
+              />
+              {dept.name}
+            </label>
+          ))}
+        </div>
         <button
-        onClick={handleSubmit}
-        className=" row-7 col-span-2 bg-[rgb(81,181,214)] text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-      >
-        Find Matching Venues
-      </button>
+          onClick={handleSubmit}
+          className="bg-[rgb(81,181,214)] text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Find Matching Venues
+        </button>
       </div>
-
       
 
-      <div className="grid grid-col-1 grid-rows-6 col-2 row-span-7">
+      <div className="bg-[#e7e7f3] rounded-2xl mb-4 p-4">
         <h2 className="row-1 text-xl font-semibold mb-4">Matching Venues</h2>
         {venues.length === 0 ? (
-          <p className="row-span-5">No venues found.</p>
+          <p className="">No venues found.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 row-span-5">
-            {venues.map((venue) => (
-              <div key={venue.venueID} className="border rounded-xl shadow p-4 bg-white">
-                <h3 className="text-lg font-bold">{venue.venueName}</h3>
-                <p>Location: {venue.location}</p>
-                <p>Rating: {venue.rating}</p>
-                <a href={venue.website} className="text-blue-600 underline" target="_blank" rel="noreferrer">
-                  Visit Website
-                </a>
-                <button
-                  onClick={() => openDialog(venue)}
-                  className="mt-3 block w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
-                >
-                  View Details
-                </button>
-              </div>
-            ))}
+          <div className="grid grid-col-3 bg-[rgb(81,181,214)] rounded-2xl mb-4 p-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {venues.map((venue) => (
+                <div key={venue.venueID} className="border rounded-xl shadow p-4 bg-white">
+                  <h3 className="text-lg font-bold">{venue.venueName}</h3>
+                  <p>Location: {venue.location}</p>
+                  <p>Rating: {venue.rating}</p>
+                  <a href={venue.website} className="text-blue-600 underline" target="_blank" rel="noreferrer">
+                    Visit Website
+                  </a>
+                  <button
+                    onClick={() => openDialog(venue)}
+                    className="mt-3 block w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+                  >
+                    View Details
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

@@ -11,6 +11,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import SupervisorLayout from '../../components/layouts/supervisor_layout';
+
 
 type Report = {
   reportID: number;
@@ -92,54 +94,58 @@ const ReportMarkingPage = () => {
   };
   
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Report Viewing & Marking</h1>
-      {reports.length === 0 ? (
-        <p>No reports found.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {reports.map((report) => (
-            <Card
-              key={report.reportID}
-              className="cursor-pointer"
-              onClick={() => setSelectedReport(report)}
-            >
-              <CardContent>
-                <h3 className="text-xl font-semibold">{report.reportID}</h3>
-                <p>{report.feedback ? report.feedback : "No feedback yet"}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+    <SupervisorLayout>
+      <div className="row-span-12 col-span-12 bg-[#e7e7f3] rounded-2xl mb-4 p-4">
+        <h1 className="text-2xl font-bold mb-4">Report Viewing & Marking</h1>
+        <div className="grid grid-col-3 bg-[rgb(81,181,214)] rounded-2xl mb-4 p-2">
+          {reports.length === 0 ? (
+            <p>No reports found.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {reports.map((report) => (
+                <Card
+                  key={report.reportID}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedReport(report)}
+                >
+                  <CardContent>
+                    <h3 className="text-xl font-semibold">{report.reportID}</h3>
+                    <p>{report.feedback ? report.feedback : "No feedback yet"}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
-      <Dialog open={!!selectedReport} onOpenChange={(open) => !open && setSelectedReport(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Mark Report</DialogTitle>
-            <DialogDescription>Select the mark and provide feedback</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              type="number"
-              placeholder="Mark"
-              value={mark}
-              onChange={(e) => setMark(e.target.value)}
-              className="w-full"
-            />
-            <Textarea
-              placeholder="Feedback"
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              className="w-full"
-            />
-          </div>
-          <Button onClick={handleMarkReport} className="mt-4">
-            Submit Mark
-          </Button>
-        </DialogContent>
-      </Dialog>
-    </div>
+          <Dialog open={!!selectedReport} onOpenChange={(open) => !open && setSelectedReport(null)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Mark Report</DialogTitle>
+                <DialogDescription>Select the mark and provide feedback</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Input
+                  type="number"
+                  placeholder="Mark"
+                  value={mark}
+                  onChange={(e) => setMark(e.target.value)}
+                  className="w-full"
+                />
+                <Textarea
+                  placeholder="Feedback"
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+              <Button onClick={handleMarkReport} className="mt-4">
+                Submit Mark
+              </Button>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+    </SupervisorLayout>
   );
 };
 

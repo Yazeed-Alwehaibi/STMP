@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import RepLayout from '../../components/layouts/rep_layout';
 
 type Offer = {
   offerID: number;
@@ -100,78 +101,81 @@ const RepApplications = () => {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Your Offers</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {offers.map((offer) => (
-          <div
-            key={offer.offerID}
-            className="bg-white p-4 shadow-md rounded-lg border cursor-pointer hover:shadow-lg"
-            onClick={() => {
-              setSelectedOffer(offer);
-              fetchParticipants(offer.offerID);
-            }}
-          >
-            <h2 className="text-lg font-bold text-center">{offer.title}</h2>
-          </div>
-        ))}
-      </div>
-
-      {selectedOffer && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-2/3 relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-              onClick={() => setSelectedOffer(null)}
-            >
-              ✖
-            </button>
-            <h2 className="text-2xl font-bold mb-4 text-center">{selectedOffer.title}</h2>
-
-            {loadingParticipants ? (
-              <p className="text-center">Loading participants...</p>
-            ) : (
-              <>
-                {participants.length === 0 ? (
-                  <p className="text-center text-gray-600">No students have applied yet.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {participants.map((p) => (
-                      <div
-                        key={p.participantID}
-                        className="border p-4 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between"
-                      >
-                        <div className="space-y-1">
-                          <p><strong>User ID:</strong> {p.userID}</p>
-                          <p><strong>Name:</strong> {p.userName}</p>
-                          <p><strong>Department:</strong> {p.department}</p>
-                          <p><strong>GPA:</strong> {p.gpa}</p>
-                          <p><strong>Status:</strong> {p.status}</p>
-                        </div>
-                        <div className="mt-4 md:mt-0 flex gap-2">
-                          <button
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                            onClick={() => handleAccept(p.participantID)}
-                          >
-                            Accept
-                          </button>
-                          <button
-                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                            onClick={() => handleReject(p.participantID)}
-                          >
-                            Reject
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
+    <RepLayout>
+      <div className="row-span-12 col-span-12 bg-[#e7e7f3] rounded-2xl mb-4 p-4">
+        <h1 className="text-2xl font-bold mb-6">Your Offers</h1>
+        <div className="grid grid-col-3 bg-[rgb(81,181,214)] rounded-2xl mb-4 p-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {offers.map((offer) => (
+              <div
+                key={offer.offerID}
+                className="bg-white p-4 shadow-md rounded-lg border cursor-pointer hover:shadow-lg"
+                onClick={() => {
+                  setSelectedOffer(offer);
+                  fetchParticipants(offer.offerID);
+                }}
+              >
+                <h2 className="text-lg font-bold text-center">{offer.title}</h2>
+              </div>
+            ))}
           </div>
         </div>
-      )}
-    </div>
+        {selectedOffer && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-2/3 relative">
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                onClick={() => setSelectedOffer(null)}
+              >
+                ✖
+              </button>
+              <h2 className="text-2xl font-bold mb-4 text-center">{selectedOffer.title}</h2>
+
+              {loadingParticipants ? (
+                <p className="text-center">Loading participants...</p>
+              ) : (
+                <>
+                  {participants.length === 0 ? (
+                    <p className="text-center text-gray-600">No students have applied yet.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {participants.map((p) => (
+                        <div
+                          key={p.participantID}
+                          className="border p-4 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between"
+                        >
+                          <div className="space-y-1">
+                            <p><strong>User ID:</strong> {p.userID}</p>
+                            <p><strong>Name:</strong> {p.userName}</p>
+                            <p><strong>Department:</strong> {p.department}</p>
+                            <p><strong>GPA:</strong> {p.gpa}</p>
+                            <p><strong>Status:</strong> {p.status}</p>
+                          </div>
+                          <div className="mt-4 md:mt-0 flex gap-2">
+                            <button
+                              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                              onClick={() => handleAccept(p.participantID)}
+                            >
+                              Accept
+                            </button>
+                            <button
+                              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                              onClick={() => handleReject(p.participantID)}
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </RepLayout>
   );
 };
 

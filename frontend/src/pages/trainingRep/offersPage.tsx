@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useUser } from "../../context/UserContext";
+import RepLayout from '../../components/layouts/rep_layout';
 
 const CreateOfferForm = () => {
   const { user } = useUser();
@@ -64,77 +65,79 @@ const CreateOfferForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="bg-gray-200 space-y-4 p-4 border rounded-lg shadow-md">
-      <div className="p-2 border-b mb-4">
-        {user ? (
-          <>
-            <p className="text-sm font-medium">User ID: {user.systemID}</p>
-            <p className="text-sm font-medium">User Name: {user.userName}</p>
-          </>
-        ) : (
-          <p className="text-sm text-red-500">User not logged in</p>
-        )}
-      </div>
+    <RepLayout>
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-gray-200 space-y-4 p-4 border rounded-lg shadow-md">
+        <div className="p-2 border-b mb-4">
+          {user ? (
+            <>
+              <p className="text-sm font-medium">User ID: {user.systemID}</p>
+              <p className="text-sm font-medium">User Name: {user.userName}</p>
+            </>
+          ) : (
+            <p className="text-sm text-red-500">User not logged in</p>
+          )}
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium">Title</label>
-        <input
-          {...register("title", { required: "Title is required" })}
-          className="w-full p-2 border rounded-md border-black"
-        />
-        {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
-      </div>
+        <div>
+          <label className="block text-sm font-medium">Title</label>
+          <input
+            {...register("title", { required: "Title is required" })}
+            className="w-full p-2 border rounded-md border-black"
+          />
+          {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium">Description</label>
-        <textarea
-          {...register("description", { required: "Description is required" })}
-          className="w-full p-2 border rounded-md border-black"
-        />
-        {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
-      </div>
+        <div>
+          <label className="block text-sm font-medium">Description</label>
+          <textarea
+            {...register("description", { required: "Description is required" })}
+            className="w-full p-2 border rounded-md border-black"
+          />
+          {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium">Start Date</label>
-        <input
-          type="date"
-          {...register("startDate", { required: "Start date is required" })}
-          className="w-full p-2 border rounded-md border-black"
-        />
-        {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate.message}</p>}
-      </div>
+        <div>
+          <label className="block text-sm font-medium">Start Date</label>
+          <input
+            type="date"
+            {...register("startDate", { required: "Start date is required" })}
+            className="w-full p-2 border rounded-md border-black"
+          />
+          {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate.message}</p>}
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium">End Date</label>
-        <input
-          type="date"
-          {...register("endDate", { required: "End date is required" })}
-          className="w-full p-2 border rounded-md border-black"
-        />
-        {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate.message}</p>}
-      </div>
+        <div>
+          <label className="block text-sm font-medium">End Date</label>
+          <input
+            type="date"
+            {...register("endDate", { required: "End date is required" })}
+            className="w-full p-2 border rounded-md border-black"
+          />
+          {errors.endDate && <p className="text-red-500 text-sm">{errors.endDate.message}</p>}
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium">Max Participants</label>
-        <input
-          type="number"
-          {...register("maxParticipant", {
-            required: "Max participants is required",
-            min: { value: 1, message: "Must be at least 1" },
-            valueAsNumber: true, // This is key!
-          })}
-          className="w-full p-2 border rounded-md border-black"
-        />
+        <div>
+          <label className="block text-sm font-medium">Max Participants</label>
+          <input
+            type="number"
+            {...register("maxParticipant", {
+              required: "Max participants is required",
+              min: { value: 1, message: "Must be at least 1" },
+              valueAsNumber: true, // This is key!
+            })}
+            className="w-full p-2 border rounded-md border-black"
+          />
 
-        {errors.maxParticipant && (
-          <p className="text-red-500 text-sm">{errors.maxParticipant.message}</p>
-        )}
-      </div>
+          {errors.maxParticipant && (
+            <p className="text-red-500 text-sm">{errors.maxParticipant.message}</p>
+          )}
+        </div>
 
-      <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-        Submit Offer
-      </button>
-    </form>
+        <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+          Submit Offer
+        </button>
+      </form>
+      </RepLayout>
   );
 };
 

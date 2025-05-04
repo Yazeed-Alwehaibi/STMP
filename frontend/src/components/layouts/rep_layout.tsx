@@ -1,4 +1,5 @@
 import RoutingMethods from '../../pages/routing/RoutingMethods';
+import { useUser } from "../../context/UserContext";
 import QU_logo from '../../components/images/QU-logo.png'
 import v2030 from '../../components/images/vision2030.png'
 import out from '../../components/images/logout.png'
@@ -7,10 +8,9 @@ import reports from '../../components/images/reports.png'
 import presentation from '../../components/images/presentation.png'
 import community from '../../components/images/community.png'
 import React from 'react';
-import { useUser } from "../../context/UserContext";
 
-const SupervisorLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { supervisorApplication, supervisorReport, supervisorPresentation, indexPage } = RoutingMethods();
+const RepLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { repApplication, repReport, repOffers, indexPage } = RoutingMethods();
     const { user } = useUser();
 
     return (
@@ -41,17 +41,17 @@ const SupervisorLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                     <div className='row-span-12 col-span-1'></div>
 
                     <div className="rounded-2xl border row-span-11 col-span-6 flex flex-col justify-center items-center space-y-10 bg-[rgb(81,181,214)]">
-                        <button onClick={supervisorApplication} className="flex flex-col items-center text-black text-xs font-semibold hover:scale-105 transition">
+                        <button onClick={repApplication} className="flex flex-col items-center text-black text-xs font-semibold hover:scale-105 transition">
                             <img src={venues} className="h-6 w-6 mb-1" alt="Applications" />
                             Applications
                         </button>
-                        <button onClick={supervisorReport} className="flex flex-col items-center text-black text-xs font-medium hover:scale-105 transition">
+                        <button onClick={repReport} className="flex flex-col items-center text-black text-xs font-medium hover:scale-105 transition">
                             <img src={reports} className="h-6 w-6 mb-1" alt="Reports" />
                             Reports
                         </button>
-                        <button onClick={supervisorPresentation} className="flex flex-col items-center text-black text-xs font-semibold hover:scale-105 transition">
+                        <button onClick={repOffers} className="flex flex-col items-center text-black text-xs font-semibold hover:scale-105 transition">
                             <img src={presentation} className="h-6 w-6 mb-1" alt="Presentation" />
-                            Presentation
+                            Offers
                         </button>
                         <button className="flex flex-col items-center text-black text-xs font-medium hover:scale-105 transition">
                             <img src={community} className="h-6 w-6 mb-1" alt="Community" />
@@ -63,7 +63,7 @@ const SupervisorLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                 {/* Main Content Area */}
                 <div className="grid grid-cols-48 grid-rows-12 gap-2 col-span-10 row-span-7">
                     <div className="col-span-1 row-span-12"></div>
-                    <div className="grid grid-col-12 grid-row-12 col-span-46 row-span-12 ">
+                    <div className="col-span-46 row-span-12">
                         {children}
                     </div>
                 </div>
@@ -73,4 +73,4 @@ const SupervisorLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     );
 };
 
-export default SupervisorLayout;
+export default RepLayout;

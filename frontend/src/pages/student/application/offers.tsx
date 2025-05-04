@@ -63,52 +63,57 @@ const OffersList = () => {
   };
 
   return (
-    <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-      {/* Display the offers */}
-      {offers.map((offer) => (
-        <div
-          key={offer.offerID}
-          className="bg-white p-4 shadow-md rounded-lg border cursor-pointer hover:shadow-lg"
-          onClick={() => setSelectedOffer(offer)}
-        >
-          <h2 className="text-lg font-bold text-center">{offer.title}</h2>
-        </div>
-      ))}
-
-      {/* Dialog for offer details */}
-      {selectedOffer && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-              onClick={() => setSelectedOffer(null)}
+    <div className="bg-[#e7e7f3] p-4 rounded-2xl mb-4">
+      <h2 className="p-2 text-xl font-semibold mb-4">Offers</h2>
+      <div className="grid grid-col-3 bg-[rgb(81,181,214)] rounded-2xl mb-4 p-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Display the offers */}
+          {offers.map((offer) => (
+            <div
+              key={offer.offerID}
+              className="bg-white p-4 shadow-md rounded-lg border cursor-pointer hover:shadow-lg"
+              onClick={() => setSelectedOffer(offer)}
             >
-              ✖
-            </button>
-            <h2 className="text-2xl font-bold mb-4">{selectedOffer.title}</h2>
-            <p className="mb-2">{selectedOffer.description}</p>
-            <p className="text-sm text-gray-600">
-              Start: {new Date(selectedOffer.startDate).toLocaleString()}
-            </p>
-            <p className="text-sm text-gray-600">
-              End: {new Date(selectedOffer.endDate).toLocaleString()}
-            </p>
+              <h2 className="text-lg font-bold text-center">{offer.title}</h2>
+            </div>
+          ))}
 
-            {/* Apply Button */}
-            <button
-              className={`mt-4 w-full py-2 rounded ${appliedOffers.includes(selectedOffer.offerID) ? 'bg-gray-400 text-gray-700 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
-              onClick={() => {
-                if (!appliedOffers.includes(selectedOffer.offerID)) {
-                  handleApply(selectedOffer.offerID); // Apply for the offer
-                }
-              }}
-              disabled={appliedOffers.includes(selectedOffer.offerID)} // Disable if already applied
-            >
-              {appliedOffers.includes(selectedOffer.offerID) ? 'Applied ✅' : 'Apply'}
-            </button>
-          </div>
+          {/* Dialog for offer details */}
+          {selectedOffer && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 relative">
+                <button
+                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                  onClick={() => setSelectedOffer(null)}
+                >
+                  ✖
+                </button>
+                <h2 className="text-2xl font-bold mb-4">{selectedOffer.title}</h2>
+                <p className="mb-2">{selectedOffer.description}</p>
+                <p className="text-sm text-gray-600">
+                  Start: {new Date(selectedOffer.startDate).toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-600">
+                  End: {new Date(selectedOffer.endDate).toLocaleString()}
+                </p>
+
+                {/* Apply Button */}
+                <button
+                  className={`mt-4 w-full py-2 rounded ${appliedOffers.includes(selectedOffer.offerID) ? 'bg-gray-400 text-gray-700 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                  onClick={() => {
+                    if (!appliedOffers.includes(selectedOffer.offerID)) {
+                      handleApply(selectedOffer.offerID); // Apply for the offer
+                    }
+                  }}
+                  disabled={appliedOffers.includes(selectedOffer.offerID)} // Disable if already applied
+                >
+                  {appliedOffers.includes(selectedOffer.offerID) ? 'Applied ✅' : 'Apply'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
