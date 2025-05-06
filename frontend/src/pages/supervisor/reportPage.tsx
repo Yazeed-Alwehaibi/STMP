@@ -19,9 +19,9 @@ type Report = {
   mark: number | null;
   feedback: string | null;
   studentID: number;
-  trainingRepID: number | null;
   supervisorID: number;
   applicationID: number;
+  studentName: string; 
   submissionDate: string;
   type: string;
   status: string;
@@ -109,9 +109,14 @@ const ReportMarkingPage = () => {
                   onClick={() => setSelectedReport(report)}
                 >
                   <CardContent>
-                    <h3 className="text-xl font-semibold">{report.reportID}</h3>
-                    <p>{report.feedback ? report.feedback : "No feedback yet"}</p>
-                  </CardContent>
+                  <h3 className="text-lg font-semibold">
+                    Name: {report.studentName}
+                    <br />ID: {report.studentID} <br />
+                     report type: {report.type} <br />
+                     <p>{new Date(report.submissionDate).toLocaleString()}</p>
+                     </h3>
+                </CardContent>
+
                 </Card>
               ))}
             </div>

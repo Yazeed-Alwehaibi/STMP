@@ -25,21 +25,28 @@ export const getReportsBySupervisor = async (req: AuthRequest, res: Response): P
     }
 
     const supervisorReports = await db
-  .select({
-    reportID: reports.reportID,
-    studentName: usersTable.UserName,
-    mark: reports.mark,
-    feedback: reports.feedback,
-    fileUrl: reports.fileUrl, 
-  })
-  .from(reports)
-  .innerJoin(usersTable, eq(reports.studentID, usersTable.SystemID))
-  .where(
-    and(
-      eq(reports.supervisorID, Number(supervisorID)),
-      isNull(reports.mark)
-    )
-  );
+      .select({
+        reportID: reports.reportID,
+        mark: reports.mark,
+        feedback: reports.feedback,
+        studentID: reports.studentID,
+        supervisorID: reports.supervisorID,
+        applicationID: reports.applicationID,
+        studentName: usersTable.UserName,
+        submissionDate: reports.submissionDate,
+        type: reports.type,
+        status: reports.status,
+        content: reports.content,
+        fileUrl: reports.fileUrl,
+      })
+      .from(reports)
+      .innerJoin(usersTable, eq(reports.studentID, usersTable.SystemID))
+      .where(
+        and(
+          eq(reports.supervisorID, Number(supervisorID)),
+          isNull(reports.mark)
+        )
+      );
 
     // Convert report ID to string if needed
     const formatted = supervisorReports.map((r) => ({

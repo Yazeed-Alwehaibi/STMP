@@ -11,7 +11,7 @@ const HomePage = () => {
                     <p className='col-1 row-1 font-bold'>Representitive Name</p>
                     <p className='col-2 row-1'>: {user?.userName}</p>
                     <p className='col-1 row-2 font-bold'>Representitive ID</p>
-                    <p className='col-2 row-2'>: {user?.id}</p>
+                    <p className='col-2 row-2'>: {user?.userID}</p>
                     <p className='col-1 row-3 font-bold'>E-mail</p>
                     <p className='col-2 row-3'>: {user?.email}</p>
                 </div>

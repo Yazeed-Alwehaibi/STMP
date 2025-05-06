@@ -19,6 +19,7 @@ export const getPresentationsBySupervisor = async (req: AuthRequest, res: Respon
     const results = await db
       .select({
         id: presentation.presentationID,
+        studentID: usersTable.SystemID,
         studentName: usersTable.UserName,
         fileUrl: presentation.fileUrl,
         date: presentation.presentationDate,

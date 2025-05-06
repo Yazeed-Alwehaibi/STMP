@@ -9,6 +9,7 @@ import SupervisorLayout from '../../components/layouts/supervisor_layout';
 
 interface Presentation {
   id: string;
+  studentID: string;
   studentName: string;
   title: string;
   fileUrl: string;
@@ -84,7 +85,8 @@ export default function PresentationPage() {
               <Card key={presentation.id} className="p-4">
                 <CardContent>
                   <h2 className="text-lg font-semibold">{presentation.title}</h2>
-                  <p className="text-sm text-gray-600">Submitted by {presentation.studentName}</p>
+                  <p className="text-sm text-gray-600">Name: {presentation.studentName}</p>
+                  <p className="text-sm text-gray-600">Student ID: {presentation.studentID}</p>
                   <a
                     href={presentation.fileUrl}
                     target="_blank"
@@ -93,7 +95,7 @@ export default function PresentationPage() {
                   >
                     View Presentation
                   </a>
-                  <p className="mt-2 text-sm">Scheduled Date: {presentation.date || "Not set"}</p>
+                  <p className="mt-2 text-sm">Scheduled Date: {presentation.date ? new Date(presentation.date).toLocaleDateString() : "Not submitted"}</p>
                   <Button className="mt-2" onClick={() => setSelectedPresentation(presentation)}>
                     Set Date
                   </Button>

@@ -4,7 +4,7 @@ import { getProfile, logoutUser } from "../api/auth";
 
 interface User {
   systemID: string;
-  id: string;
+  userID: string;
   email: string;
   userName: string;
   role?: string;

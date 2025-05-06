@@ -8,10 +8,21 @@ import reports from '../../components/images/reports.png'
 import presentation from '../../components/images/presentation.png'
 import community from '../../components/images/community.png'
 import React from 'react';
+import { logoutUser } from '../../api/auth'; // Correct import path
 
 const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { studentApplication, studentReport, studentPresentation, indexPage } = RoutingMethods();
-    const { user } = useUser();
+    const { setUser } = useUser(); // Get setUser to clear user context
+
+    const handleLogout = async () => {
+        try {
+            await logoutUser();
+            setUser(null); // Clear user context
+            indexPage(); // Redirect to indexPage (or you can use history.push() to navigate)
+        } catch (err) {
+            console.error("Logout failed:", err);
+        }
+    };
 
     return (
         <div>
@@ -25,7 +36,7 @@ const StudentLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 {/* Navbar */}
                 <div className="bg-[rgb(81,181,214)] text-white flex items-center justify-start px-40 col-span-12 row-span-1">
                     <button
-                        onClick={indexPage}
+                        onClick={handleLogout}
                         className="flex items-center gap-2 hover:underline text-white"
                     >
                         <img src={out} alt="Logout" className="h-6 w-6 object-contain" />

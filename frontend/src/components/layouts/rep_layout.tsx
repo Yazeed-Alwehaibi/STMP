@@ -1,5 +1,4 @@
 import RoutingMethods from '../../pages/routing/RoutingMethods';
-import { useUser } from "../../context/UserContext";
 import QU_logo from '../../components/images/QU-logo.png'
 import v2030 from '../../components/images/vision2030.png'
 import out from '../../components/images/logout.png'
@@ -8,10 +7,25 @@ import reports from '../../components/images/reports.png'
 import presentation from '../../components/images/presentation.png'
 import community from '../../components/images/community.png'
 import React from 'react';
+import { logoutUser } from '../../api/auth'; // Correct import path
+import { useUser } from '../../context/UserContext'; // Import useUser from the correct context
+
 
 const RepLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { repApplication, repReport, repOffers, indexPage } = RoutingMethods();
-    const { user } = useUser();
+
+    const { setUser } = useUser(); // Get setUser to clear user context
+
+    const handleLogout = async () => {
+        try {
+            await logoutUser();
+            setUser(null); // Clear user context
+            indexPage(); // Redirect to indexPage (or you can use history.push() to navigate)
+        } catch (err) {
+            console.error("Logout failed:", err);
+        }
+    };
+
 
     return (
         <div>
@@ -25,7 +39,7 @@ const RepLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 {/* Navbar */}
                 <div className="bg-[rgb(81,181,214)] text-white flex items-center justify-start px-40 col-span-12 row-span-1">
                     <button
-                        onClick={indexPage}
+                        onClick={handleLogout}
                         className="flex items-center gap-2 hover:underline text-white"
                     >
                         <img src={out} alt="Logout" className="h-6 w-6 object-contain" />
