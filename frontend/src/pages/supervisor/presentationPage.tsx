@@ -27,7 +27,6 @@ export default function PresentationPage() {
 
 
   useEffect(() => {
-    if (!user?.systemID) return;
 
     setLoading(true);
     axios
@@ -41,10 +40,7 @@ export default function PresentationPage() {
       .catch(() => setError("Failed to load presentations"))
       .finally(() => setLoading(false));
   }, [user?.systemID]);
-
-  if (!user?.systemID) {
-    return <p>Please log in to view this page.</p>;
-  }
+  
   
   const handleSetDate = async () => {
     if (!selectedPresentation || !date) return;

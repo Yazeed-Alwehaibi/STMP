@@ -10,9 +10,9 @@ const HomePage = () => {
             <div className='row-span-12 col-span-12'>
                 <div className="bg-[#e7e7f3] p-4 rounded-2xl mb-4">
                     <div className="grid grid-cols-5 grid-rows-3 gap-1">
-                        <p className='col-1 row-1 font-bold'>Student Name</p>
+                        <p className='col-1 row-1 font-bold'>supervisor Name</p>
                         <p className='col-2 row-1'>: {user?.userName}</p>
-                        <p className='col-1 row-2 font-bold'>Student ID</p>
+                        <p className='col-1 row-2 font-bold'>supervisor ID</p>
                         <p className='col-2 row-2'>: {user?.userID}</p>
                         <p className='col-1 row-3 font-bold'>E-mail</p>
                         <p className='col-2 row-3'>: {user?.email}</p>
