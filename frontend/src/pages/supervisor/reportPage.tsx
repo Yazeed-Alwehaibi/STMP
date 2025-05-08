@@ -11,8 +11,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import SupervisorLayout from '../../components/layouts/supervisor_layout';
-
+import SupervisorLayout from "../../components/layouts/supervisor_layout";
 
 type Report = {
   reportID: number;
@@ -21,7 +20,7 @@ type Report = {
   studentID: number;
   supervisorID: number;
   applicationID: number;
-  studentName: string; 
+  studentName: string;
   submissionDate: string;
   type: string;
   status: string;
@@ -38,9 +37,10 @@ const ReportMarkingPage = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/reports", { withCredentials: true });
+        const response = await axios.get("http://localhost:3000/api/reports", {
+          withCredentials: true,
+        });
 
-        // Check if the response is as expected (an array of reports)
         if (Array.isArray(response.data)) {
           setReports(response.data);
         } else {
@@ -59,29 +59,26 @@ const ReportMarkingPage = () => {
       alert("Please provide both mark and feedback");
       return;
     }
-  
-    // Ensure mark is sent as a number
+
     const numericMark = parseFloat(mark.toString());
-  
+
     if (isNaN(numericMark)) {
       alert("Invalid mark value");
       return;
     }
-  
+
     const data = { mark: numericMark, feedback };
-  
+
     try {
-      console.log("Sending data to backend:", data); // Log the data being sent
-  
       const response = await axios.post(
         `http://localhost:3000/api/reports/${selectedReport.reportID}/mark`,
         data,
         { withCredentials: true }
       );
-  
+
       if (response.status === 200) {
         alert("Report marked successfully");
-        setSelectedReport(null); // Close dialog
+        setSelectedReport(null);
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -92,7 +89,7 @@ const ReportMarkingPage = () => {
       alert("Failed to mark the report.");
     }
   };
-  
+
   return (
     <SupervisorLayout>
       <div className="row-span-12 col-span-12 bg-[#e7e7f3] rounded-2xl mb-4 p-4">
@@ -109,14 +106,16 @@ const ReportMarkingPage = () => {
                   onClick={() => setSelectedReport(report)}
                 >
                   <CardContent>
-                  <h3 className="text-lg font-semibold">
-                    Name: {report.studentName}
-                    <br />ID: {report.studentID} <br />
-                     report type: {report.type} <br />
-                     <p>{new Date(report.submissionDate).toLocaleString()}</p>
-                     </h3>
-                </CardContent>
-
+                    <h3 className="text-lg font-semibold">
+                      Name: {report.studentName}
+                      <br />
+                      ID: {report.studentID}
+                      <br />
+                      Report Type: {report.type}
+                      <br />
+                      <p>{new Date(report.submissionDate).toLocaleString()}</p>
+                    </h3>
+                  </CardContent>
                 </Card>
               ))}
             </div>
@@ -128,24 +127,45 @@ const ReportMarkingPage = () => {
                 <DialogTitle>Mark Report</DialogTitle>
                 <DialogDescription>Select the mark and provide feedback</DialogDescription>
               </DialogHeader>
-              <div className="space-y-4">
-                <Input
-                  type="number"
-                  placeholder="Mark"
-                  value={mark}
-                  onChange={(e) => setMark(e.target.value)}
-                  className="w-full"
-                />
-                <Textarea
-                  placeholder="Feedback"
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  className="w-full"
-                />
-              </div>
-              <Button onClick={handleMarkReport} className="mt-4">
-                Submit Mark
-              </Button>
+
+              {selectedReport && (
+                <div className="space-y-4">
+                  <div className="bg-gray-100 p-4 rounded border">
+                    <h4 className="font-semibold mb-2">Report Content:</h4>
+                    <p className="whitespace-pre-wrap">{selectedReport.content}</p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold">Attached File:</h4>
+                    <a
+                      href={selectedReport.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline break-all"
+                    >
+                      {selectedReport.fileUrl}
+                    </a>
+                  </div>
+
+                  <Input
+                    type="number"
+                    placeholder="Mark"
+                    value={mark}
+                    onChange={(e) => setMark(e.target.value)}
+                    className="w-full"
+                  />
+                  <Textarea
+                    placeholder="Feedback"
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    className="w-full"
+                  />
+
+                  <Button onClick={handleMarkReport} className="mt-4">
+                    Submit Mark
+                  </Button>
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         </div>
